@@ -23,6 +23,10 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
 
     private var monthKey = DateUtil.monthNow()
     private val tvMonth = UiKit.text(host, "", 16f, Theme.mainText(host), bold = true, gravity = Gravity.CENTER)
+    private val tvCurrent = UiKit.text(host, "本月", 12f, C.PRIMARY, bold = true, gravity = Gravity.CENTER).apply {
+        background = UiKit.rounded(host, C.PRIMARY_BG, 16)
+        setOnClickListener { backToCurrent() }
+    }
     private val tvExpense = UiKit.text(host, "", 26f, C.EXPENSE, bold = true)
     private val tvIncome = UiKit.text(host, "", 15f, C.INCOME, bold = true)
     private val tvBalance = UiKit.text(host, "", 15f, Theme.subText(host), bold = true)
@@ -43,6 +47,9 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
         navRow.addView(navArrow(-1))
         navRow.addView(tvMonth, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         navRow.addView(navArrow(1))
+        navRow.addView(tvCurrent, LinearLayout.LayoutParams(Theme.dp(host, 48), Theme.dp(host, 32)).apply {
+            setMargins(Theme.dp(host, 8), 0, 0, 0)
+        })
         addView(navRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 52)))
 
         val scroll = ScrollView(host)
@@ -103,6 +110,15 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
         return btn
     }
 
+    private fun backToCurrent() {
+        monthKey = DateUtil.monthNow()
+        refresh()
+    }
+
+    private fun updateCurrentVisibility() {
+        tvCurrent.visibility = if (monthKey == DateUtil.monthNow()) View.GONE else View.VISIBLE
+    }
+
     private fun sectionTitle(text: String): TextView {
         val tv = UiKit.text(host, text, 14f, Theme.mainText(host), bold = true)
         tv.setPadding(Theme.dp(host, 14), Theme.dp(host, 12), Theme.dp(host, 14), Theme.dp(host, 2))
@@ -124,6 +140,7 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
 
     fun refresh() {
         tvMonth.text = DateUtil.monthTitle(monthKey)
+        updateCurrentVisibility()
         val ledger = App.db.activeLedger()
         val from = DateUtil.firstDayOfMonth(monthKey)
         val to = DateUtil.lastDayOfMonth(monthKey)

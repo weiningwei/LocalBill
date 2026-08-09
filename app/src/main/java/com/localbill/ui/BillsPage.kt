@@ -29,6 +29,7 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
     private var year = DateUtil.yearOf(DateUtil.monthNow())
 
     private val tvNav = UiKit.text(host, "", 16f, Theme.mainText(host), bold = true, gravity = Gravity.CENTER)
+    private lateinit var tvCurrent: TextView
     private val tvSummaryLabel = UiKit.text(host, "", 13f, Theme.subText(host))
     private val tvExpense = UiKit.text(host, "", 34f, C.EXPENSE, bold = true)
     private val tvIncome = UiKit.text(host, "", 16f, C.INCOME, bold = true)
@@ -44,19 +45,30 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
     }
 
     private fun buildUi() {
-        // 口径切换：胶囊式分段
+        // 口径切换 + 回到当前
+        val segWrap = LinearLayout(host).apply {
+            background = UiKit.rounded(host, Theme.surface(host), 22)
+        }
         val seg = UiKit.horizontal(host).apply {
             gravity = Gravity.CENTER
             setPadding(Theme.dp(host, 3), Theme.dp(host, 3), Theme.dp(host, 3), Theme.dp(host, 3))
         }
-        val segWrap = LinearLayout(host).apply {
-            background = UiKit.rounded(host, Theme.surface(host), 22)
-        }
         seg.addView(segButton("按日", 0), segParams())
         seg.addView(segButton("按月", 1), segParams())
         seg.addView(segButton("按年", 2), segParams())
-        segWrap.addView(seg, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 38)))
-        addView(segWrap, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 44)).apply {
+        segWrap.addView(seg, LinearLayout.LayoutParams(0, Theme.dp(host, 38), 1f))
+
+        tvCurrent = UiKit.text(host, "本月", 13f, C.PRIMARY, bold = true, gravity = Gravity.CENTER)
+        tvCurrent.background = UiKit.rounded(host, C.PRIMARY_BG, 19)
+        tvCurrent.layoutParams = LinearLayout.LayoutParams(Theme.dp(host, 56), Theme.dp(host, 38))
+        tvCurrent.setOnClickListener { backToCurrent() }
+
+        val segRow = UiKit.horizontal(host).apply { gravity = Gravity.CENTER_VERTICAL }
+        segRow.addView(segWrap, LinearLayout.LayoutParams(0, Theme.dp(host, 44), 1f))
+        segRow.addView(tvCurrent, LinearLayout.LayoutParams(Theme.dp(host, 56), Theme.dp(host, 38)).apply {
+            setMargins(Theme.dp(host, 10), 0, 0, 0)
+        })
+        addView(segRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 52)).apply {
             setMargins(Theme.dp(host, 24), Theme.dp(host, 8), Theme.dp(host, 24), 0)
         })
 
@@ -65,6 +77,13 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
         navRow.addView(navArrow(-1))
         navRow.addView(tvNav, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         navRow.addView(navArrow(1))
+        tvNav.setOnClickListener {
+            when (mode) {
+                0 -> pickDay()
+                1 -> pickMonth()
+                else -> pickYear()
+            }
+        }
         addView(navRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 52)))
 
         // 统计卡片：surface 配色，对比清晰但不突兀
@@ -131,6 +150,31 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
             tv.setTextColor(if (active) 0xFFFFFFFF.toInt() else Theme.subText(host))
             tv.setTypeface(tv.typeface, if (active) Typeface.BOLD else Typeface.NORMAL)
         }
+        tvCurrent.text = when (mode) {
+            0 -> "今天"
+            1 -> "本月"
+            else -> "今年"
+        }
+        updateCurrentVisibility()
+    }
+
+    private fun updateCurrentVisibility() {
+        val isCurrent = when (mode) {
+            0 -> day == DateUtil.today()
+            1 -> monthKey == DateUtil.monthNow()
+            else -> year == DateUtil.yearOf(DateUtil.monthNow())
+        }
+        tvCurrent.visibility = if (isCurrent) View.GONE else View.VISIBLE
+    }
+
+    private fun backToCurrent() {
+        when (mode) {
+            0 -> day = DateUtil.today()
+            1 -> monthKey = DateUtil.monthNow()
+            else -> year = DateUtil.yearOf(DateUtil.monthNow())
+        }
+        updateNav()
+        refresh()
     }
 
     private fun navArrow(dir: Int): View {
@@ -152,6 +196,64 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
             refresh()
         }
         return btn
+    }
+
+    /** 按日：点击标题弹出日期列表（近一年） */
+    private fun pickDay() {
+        val items = ArrayList<Pair<Int, String>>()
+        val today = DateUtil.today()
+        for (i in 364 downTo 0) {
+            val d = DateUtil.addDays(today, -i)
+            items.add(d to DateUtil.fullDate(d))
+        }
+        val names = items.map { it.second }.toTypedArray()
+        val selected = items.indexOfFirst { it.first == day }.coerceAtLeast(0)
+        pickList("选择日期", names, selected) { idx ->
+            day = items[idx].first
+            updateNav()
+            refresh()
+        }
+    }
+
+    /** 按月：点击标题弹出月份列表（近 5 年） */
+    private fun pickMonth() {
+        val nowMonth = DateUtil.monthNow()
+        val items = ArrayList<Pair<Int, String>>()
+        for (i in 59 downTo 0) {
+            val mk = DateUtil.addMonths(nowMonth, -i)
+            items.add(mk to DateUtil.monthTitle(mk))
+        }
+        val names = items.map { it.second }.toTypedArray()
+        val selected = items.indexOfFirst { it.first == monthKey }.coerceAtLeast(0)
+        pickList("选择月份", names, selected) { idx ->
+            monthKey = items[idx].first
+            updateNav()
+            refresh()
+        }
+    }
+
+    /** 按年：点击标题弹出年份列表 */
+    private fun pickYear() {
+        val nowYear = DateUtil.yearOf(DateUtil.monthNow())
+        val years = (nowYear - 5..nowYear + 1).toList()
+        val names = years.map { "${it}年" }.toTypedArray()
+        val selected = years.indexOf(year).coerceAtLeast(0)
+        pickList("选择年份", names, selected) { idx ->
+            year = years[idx]
+            updateNav()
+            refresh()
+        }
+    }
+
+    private fun pickList(title: String, names: Array<String>, selected: Int, onPick: (Int) -> Unit) {
+        android.app.AlertDialog.Builder(host)
+            .setTitle(title)
+            .setItems(names) { _, which -> onPick(which) }
+            .show()
+            .let { dialog ->
+                val listView = dialog.listView
+                listView.setSelection(selected)
+            }
     }
 
     private fun heroStat(label: String, tv: TextView): LinearLayout {
@@ -178,6 +280,7 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
             1 -> "本月支出"
             else -> "本年支出"
         }
+        updateCurrentVisibility()
     }
 
     fun refresh() {
