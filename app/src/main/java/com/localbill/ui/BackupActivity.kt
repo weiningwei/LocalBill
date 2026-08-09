@@ -18,9 +18,11 @@ import com.localbill.R
 import com.localbill.model.Account
 import com.localbill.model.Bill
 import com.localbill.model.Category
+import com.localbill.model.Kinds
 import com.localbill.model.Ledger
 import com.localbill.util.C
 import com.localbill.util.DateUtil
+import com.localbill.util.Money
 import com.localbill.util.Theme
 import com.localbill.util.UiKit
 import org.json.JSONArray
@@ -34,6 +36,7 @@ class BackupActivity : Activity() {
         const val MODE_RESTORE = 1
         private const val REQ_EXPORT = 1001
         private const val REQ_IMPORT = 1002
+        private const val REQ_EXPORT_CSV = 1003
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,11 +58,12 @@ class BackupActivity : Activity() {
         back.setPadding(Theme.dp(ctx, 16), Theme.dp(ctx, 14), Theme.dp(ctx, 14), Theme.dp(ctx, 14))
         back.setOnClickListener { finish() }
         topBar.addView(back, LinearLayout.LayoutParams(Theme.dp(ctx, 48), Theme.dp(ctx, 48)))
-        topBar.addView(UiKit.text(ctx, "数据备份", 17f, Theme.mainText(ctx), bold = true, gravity = Gravity.CENTER),
+        topBar.addView(UiKit.text(ctx, "数据管理", 17f, Theme.mainText(ctx), bold = true, gravity = Gravity.CENTER),
             LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
         topBar.addView(View(ctx), LinearLayout.LayoutParams(Theme.dp(ctx, 48), 0))
         root.addView(topBar, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 52)))
 
+        val exportCsv = bigBtn("导出账单 CSV", "将账单明细导出为 CSV 表格，可用 Excel/WPS 打开", C.ANT_BLUE) { exportCsv() }
         val export = bigBtn("导出备份", "将全部账目数据导出为 JSON 文件保存到本地", C.PRIMARY) { exportBackup() }
         val restore = bigBtn("恢复备份", "从之前导出的 JSON 文件恢复数据（将覆盖当前数据）", C.ANT_GREEN) { importBackup() }
 
@@ -67,6 +71,7 @@ class BackupActivity : Activity() {
             12f, Theme.lightText(ctx), gravity = Gravity.CENTER)
         tip.setPadding(0, Theme.dp(ctx, 24), 0, 0)
 
+        root.addView(exportCsv)
         root.addView(export)
         root.addView(restore)
         root.addView(tip)
@@ -100,6 +105,67 @@ class BackupActivity : Activity() {
     }
 
     /* ---------------- 导出 ---------------- */
+
+    private fun exportCsv() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "text/csv"
+            putExtra(Intent.EXTRA_TITLE, "LocalBill-账单-${DateUtil.today()}.csv")
+        }
+        startActivityForResult(intent, REQ_EXPORT_CSV)
+    }
+
+    private fun exportCsvTo(uri: Uri) {
+        val csv = buildCsv()
+        try {
+            val os = contentResolver.openOutputStream(uri) ?: throw RuntimeException("无法打开文件")
+            os.use { it.write(csv.toByteArray(Charsets.UTF_8)) }
+            Toast.makeText(ctx, "CSV 导出成功", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(ctx, "导出失败: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** 生成账单明细 CSV（UTF-8 with BOM，Excel/WPS 可直接打开） */
+    private fun buildCsv(): String {
+        val sb = StringBuilder()
+        sb.append('\uFEFF') // BOM，防止 Excel 中文乱码
+        sb.append("日期,时间,账本,分类,账户,类型,金额,备注\n")
+        val bills = App.db.allBills().filter { it.isDeleted == 0 }
+            .sortedByDescending { it.day * 10000L + it.time }
+        for (b in bills) {
+            val ledger = App.db.allLedgers().firstOrNull { it.id == b.ledgerId }?.name.orEmpty()
+            val category = App.db.categoryById(b.categoryId)?.name ?: ""
+            val account = App.db.accountById(b.accountId)?.name ?: ""
+            val type = if (b.kind == Kinds.EXPENSE) "支出" else "收入"
+            sb.append(csv(dayText(b.day)))
+                .append(',').append(csv(DateUtil.timeText(b.time)))
+                .append(',').append(csv(ledger))
+                .append(',').append(csv(category))
+                .append(',').append(csv(account))
+                .append(',').append(type)
+                .append(',').append(String.format(java.util.Locale.CHINA, "%.2f", b.amount / 100.0))
+                .append(',').append(csv(b.remark))
+                .append('\n')
+        }
+        return sb.toString()
+    }
+
+    /** 处理 CSV 字段中的逗号/引号/换行 */
+    private fun csv(field: String): String {
+        if (field.isEmpty()) return ""
+        return if (field.contains(',') || field.contains('"') || field.contains('\n')) {
+            "\"" + field.replace("\"", "\"\"") + "\""
+        } else {
+            field
+        }
+    }
+
+    /** 将 YYYYMMDD 转为 YYYY-MM-DD */
+    private fun dayText(day: Int): String {
+        return "${day / 10000}-${String.format(java.util.Locale.CHINA, "%02d", (day / 100) % 100)}-" +
+                String.format(java.util.Locale.CHINA, "%02d", day % 100)
+    }
 
     private fun exportBackup() {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -228,6 +294,7 @@ class BackupActivity : Activity() {
         when (requestCode) {
             REQ_EXPORT -> data.data?.let { exportTo(it) }
             REQ_IMPORT -> data.data?.let { importFrom(it) }
+            REQ_EXPORT_CSV -> data.data?.let { exportCsvTo(it) }
         }
     }
 }

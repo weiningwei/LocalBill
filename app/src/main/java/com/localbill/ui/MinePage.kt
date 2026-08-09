@@ -68,8 +68,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
         body.addView(row("无障碍服务设置", "需在系统设置中开启后才能自动识别", {
             host.startActivity(Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }))
-        body.addView(row("备份数据", "导出 JSON 到本地文件") { open(BackupActivity::class.java) })
-        body.addView(row("恢复数据", "从 JSON 文件导入") { openRestore() })
+        body.addView(row("数据管理", "备份、恢复、导出账单") { open(BackupActivity::class.java) })
         body.addView(row("回收站", "已删除的记录") { open(RecycleBinActivity::class.java) })
         body.addView(row("关于", "版本与说明") { showAbout() })
 
@@ -79,10 +78,6 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
 
     private fun open(cls: Class<*>) {
         host.startActivity(Intent(host, cls))
-    }
-
-    private fun openRestore() {
-        host.startActivity(Intent(host, BackupActivity::class.java).putExtra(BackupActivity.EXTRA_MODE, BackupActivity.MODE_RESTORE))
     }
 
     private fun row(title: String, subtitle: String, onClick: () -> Unit): View {
