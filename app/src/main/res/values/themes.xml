@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.LocalBill" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">?attr/pageBg</item>
+        <item name="android:colorBackground">?attr/pageBg</item>
+        <item name="android:statusBarColor">?attr/pageBg</item>
+        <item name="android:navigationBarColor">?attr/surfaceColor</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:textColorPrimary">?attr/mainText</item>
+        <item name="android:textColorSecondary">?attr/subText</item>
+        <item name="android:colorAccent">@color/primary</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="pageBg">@color/bg</item>
+        <item name="surfaceColor">@color/card</item>
+        <item name="borderColor">@color/border</item>
+        <item name="dividerColor">@color/divider</item>
+        <item name="mainText">@color/text_main</item>
+        <item name="subText">@color/text_sub</item>
+        <item name="lightText">@color/text_light</item>
+    </style>
+
+    <style name="Theme.LocalBill.Dark" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">?attr/pageBg</item>
+        <item name="android:colorBackground">?attr/pageBg</item>
+        <item name="android:statusBarColor">?attr/pageBg</item>
+        <item name="android:navigationBarColor">?attr/surfaceColor</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:textColorPrimary">?attr/mainText</item>
+        <item name="android:textColorSecondary">?attr/subText</item>
+        <item name="android:colorAccent">@color/primary</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="pageBg">@color/bg_dark</item>
+        <item name="surfaceColor">@color/card_dark</item>
+        <item name="borderColor">@color/border_dark</item>
+        <item name="dividerColor">@color/divider_dark</item>
+        <item name="mainText">@color/text_main_dark</item>
+        <item name="subText">@color/text_sub_dark</item>
+        <item name="lightText">@color/text_light_dark</item>
+    </style>
+</resources>

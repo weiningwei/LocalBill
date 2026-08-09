@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="pageBg" format="color" />
+    <attr name="surfaceColor" format="color" />
+    <attr name="borderColor" format="color" />
+    <attr name="dividerColor" format="color" />
+    <attr name="mainText" format="color" />
+    <attr name="subText" format="color" />
+    <attr name="lightText" format="color" />
+</resources>
