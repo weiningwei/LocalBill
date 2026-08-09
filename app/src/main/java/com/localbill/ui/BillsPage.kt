@@ -23,15 +23,16 @@ import com.localbill.util.UiKit
 
 class BillsPage(private val host: MainActivity) : LinearLayout(host) {
 
-    private var mode = 0 // 0日 1月 2年
+    private var mode = 1 // 0日 1月 2年，默认按月
     private var day = DateUtil.today()
     private var monthKey = DateUtil.monthNow()
     private var year = DateUtil.yearOf(DateUtil.monthNow())
 
     private val tvNav = UiKit.text(host, "", 16f, Theme.mainText(host), bold = true, gravity = Gravity.CENTER)
-    private val tvExpense = UiKit.text(host, "", 14f, C.EXPENSE, bold = true)
-    private val tvIncome = UiKit.text(host, "", 14f, C.INCOME, bold = true)
-    private val tvBalance = UiKit.text(host, "", 14f, Theme.subText(host), bold = true)
+    private val tvSummaryLabel = UiKit.text(host, "", 13f, 0xCCFFFFFF.toInt())
+    private val tvExpense = UiKit.text(host, "", 34f, 0xFFFFFFFF.toInt(), bold = true)
+    private val tvIncome = UiKit.text(host, "", 14f, 0xFFFFFFFF.toInt(), bold = true)
+    private val tvBalance = UiKit.text(host, "", 14f, 0xFFFFFFFF.toInt(), bold = true)
     private val listContainer = UiKit.vertical(host)
     private val segButtons = ArrayList<TextView>()
 
@@ -43,15 +44,21 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
     }
 
     private fun buildUi() {
-        // 口径切换
-        val segRow = UiKit.horizontal(host).apply {
+        // 口径切换：胶囊式分段
+        val seg = UiKit.horizontal(host).apply {
             gravity = Gravity.CENTER
-            setPadding(0, Theme.dp(host, 10), 0, Theme.dp(host, 2))
+            setPadding(Theme.dp(host, 3), Theme.dp(host, 3), Theme.dp(host, 3), Theme.dp(host, 3))
         }
-        segRow.addView(segButton("按日", 0), segParams())
-        segRow.addView(segButton("按月", 1), segParams())
-        segRow.addView(segButton("按年", 2), segParams())
-        addView(segRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 40)))
+        val segWrap = LinearLayout(host).apply {
+            background = UiKit.rounded(host, Theme.surface(host), 22)
+        }
+        seg.addView(segButton("按日", 0), segParams())
+        seg.addView(segButton("按月", 1), segParams())
+        seg.addView(segButton("按年", 2), segParams())
+        segWrap.addView(seg, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 38)))
+        addView(segWrap, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 44)).apply {
+            setMargins(Theme.dp(host, 24), Theme.dp(host, 8), Theme.dp(host, 24), 0)
+        })
 
         // 日期导航
         val navRow = UiKit.horizontal(host).apply { gravity = Gravity.CENTER }
@@ -60,15 +67,31 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
         navRow.addView(navArrow(1))
         addView(navRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 42)))
 
-        // 汇总
-        val summary = UiKit.horizontal(host).apply {
+        // 统计卡片：渐变主色突出
+        val card = UiKit.vertical(host).apply {
             gravity = Gravity.CENTER
-            setPadding(Theme.dp(host, 8), Theme.dp(host, 4), Theme.dp(host, 8), Theme.dp(host, 4))
+            background = UiKit.gradientPrimary(host, 18)
         }
-        summary.addView(smallStat("支出", tvExpense), sumParams())
-        summary.addView(smallStat("收入", tvIncome), sumParams())
-        summary.addView(smallStat("结余", tvBalance), sumParams())
-        addView(summary, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
+        val cardLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        cardLp.setMargins(Theme.dp(host, 24), Theme.dp(host, 4), Theme.dp(host, 24), Theme.dp(host, 4))
+        card.addView(tvSummaryLabel)
+        card.addView(tvExpense, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+            topMargin = Theme.dp(host, 2)
+        })
+        val divider = View(host).apply {
+            background = UiKit.rounded(host, 0x40FFFFFF.toInt(), 1)
+        }
+        val dividerLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 1))
+        dividerLp.setMargins(Theme.dp(host, 20), Theme.dp(host, 10), Theme.dp(host, 20), Theme.dp(host, 10))
+        card.addView(divider, dividerLp)
+        val summary = UiKit.horizontal(host)
+        summary.gravity = Gravity.CENTER
+        summary.addView(heroStat("收入", tvIncome), sumParams())
+        summary.addView(heroStat("结余", tvBalance), sumParams())
+        card.addView(summary, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+            bottomMargin = Theme.dp(host, 14)
+        })
+        addView(card, cardLp)
 
         val scroll = ScrollView(host)
         scroll.isFillViewport = true
@@ -97,15 +120,16 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
     }
 
     private fun segParams(): LinearLayout.LayoutParams {
-        val lp = LinearLayout.LayoutParams(0, Theme.dp(host, 34), 1f)
-        lp.setMargins(Theme.dp(host, 18), 0, Theme.dp(host, 18), 0)
+        val lp = LinearLayout.LayoutParams(0, MATCH_PARENT, 1f)
+        lp.setMargins(Theme.dp(host, 3), 0, Theme.dp(host, 3), 0)
         return lp
     }
 
     private fun updateSeg() {
         for (tv in segButtons) {
             val active = tv.tag as Int == mode
-            tv.setTextColor(if (active) C.PRIMARY else Theme.subText(host))
+            tv.background = if (active) UiKit.rounded(host, C.PRIMARY, 18) else null
+            tv.setTextColor(if (active) 0xFFFFFFFF.toInt() else Theme.subText(host))
             tv.setTypeface(tv.typeface, if (active) Typeface.BOLD else Typeface.NORMAL)
         }
     }
@@ -130,11 +154,13 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
         return btn
     }
 
-    private fun smallStat(label: String, tv: TextView): LinearLayout {
+    private fun heroStat(label: String, tv: TextView): LinearLayout {
         val c = UiKit.vertical(host)
         c.gravity = Gravity.CENTER
-        c.addView(UiKit.text(host, label, 12f, Theme.subText(host)))
-        c.addView(tv)
+        c.addView(UiKit.text(host, label, 12f, 0xB3FFFFFF.toInt()))
+        c.addView(tv, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+            setMargins(0, Theme.dp(host, 2), 0, 0)
+        })
         return c
     }
 
@@ -146,6 +172,11 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
             0 -> DateUtil.fullDate(day)
             1 -> DateUtil.monthTitle(monthKey)
             else -> "${year}年"
+        }
+        tvSummaryLabel.text = when (mode) {
+            0 -> "今日支出"
+            1 -> "本月支出"
+            else -> "本年支出"
         }
     }
 
