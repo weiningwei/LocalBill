@@ -40,7 +40,7 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
     }
 
     private fun buildUi() {
-        // 月份切换
+        // 月份切换 + 记一笔
         val monthRow = UiKit.horizontal(host).apply {
             gravity = Gravity.CENTER
             setPadding(0, Theme.dp(host, 10), 0, Theme.dp(host, 2))
@@ -49,6 +49,14 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
         monthRow.addView(tvMonth, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         monthRow.addView(arrow(1))
         addView(monthRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 44)))
+
+        // 记一笔按钮
+        val recordBtn = UiKit.text(host, "＋ 记一笔", 14f, 0xFFFFFFFF.toInt(), bold = true, gravity = Gravity.CENTER)
+        recordBtn.background = UiKit.rounded(host, C.PRIMARY, 20)
+        val recordLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 40))
+        recordLp.setMargins(Theme.dp(host, 12), Theme.dp(host, 2), Theme.dp(host, 12), Theme.dp(host, 2))
+        recordBtn.setOnClickListener { host.openRecord(null) }
+        addView(recordBtn, recordLp)
 
         // 汇总卡片
         val card = UiKit.vertical(host).apply { background = UiKit.rounded(host, Theme.surface(host), 14) }

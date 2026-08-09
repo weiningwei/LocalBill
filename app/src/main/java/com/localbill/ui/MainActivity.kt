@@ -100,7 +100,6 @@ class MainActivity : Activity() {
         }
         bar.addView(tabItem(0, R.drawable.ic_tab_home, getString(R.string.tab_home)), weightParams())
         bar.addView(tabItem(1, R.drawable.ic_tab_bills, getString(R.string.tab_bills)), weightParams())
-        bar.addView(buildRecordButton(), weightParams())
         bar.addView(tabItem(2, R.drawable.ic_tab_stats, getString(R.string.tab_stats)), weightParams())
         bar.addView(tabItem(3, R.drawable.ic_tab_mine, getString(R.string.tab_mine)), weightParams())
         return bar
@@ -131,24 +130,6 @@ class MainActivity : Activity() {
         v.setOnClickListener { switchTab(index) }
         tabs.add(v)
         return v
-    }
-
-    private fun buildRecordButton(): View {
-        val wrap = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-        }
-        val btn = FrameLayout(this)
-        val bg = UiKit.rounded(this, C.PRIMARY, 26)
-        btn.background = bg
-        btn.layoutParams = LinearLayout.LayoutParams(Theme.dp(this, 52), Theme.dp(this, 52))
-        btn.translationY = Theme.dp(this, -12).toFloat()
-        val iv = ImageView(this)
-        iv.setImageResource(R.drawable.ic_add)
-        btn.addView(iv, FrameLayout.LayoutParams(Theme.dp(this, 26), Theme.dp(this, 26), Gravity.CENTER))
-        btn.setOnClickListener { openRecord(null) }
-        wrap.addView(btn)
-        return wrap
     }
 
     private fun switchTab(index: Int) {
