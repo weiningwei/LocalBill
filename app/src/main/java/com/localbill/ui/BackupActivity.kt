@@ -70,6 +70,7 @@ class BackupActivity : Activity() {
         root.addView(export)
         root.addView(restore)
         root.addView(tip)
+        UiKit.fitSystemBars(root)
         setContentView(root)
     }
 

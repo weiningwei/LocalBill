@@ -110,6 +110,7 @@ class CategoryManageActivity : Activity() {
         addBtn.setOnClickListener { addDialog() }
         root.addView(addBtn, addLp)
 
+        UiKit.fitSystemBars(root)
         setContentView(root)
     }
 

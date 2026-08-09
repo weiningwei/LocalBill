@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -85,8 +86,25 @@ class MainActivity : Activity() {
         pages.add(minePage)
         pages.forEach { contentFrame.addView(it, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT) }
 
-        root.addView(buildBottomBar(), LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Theme.dp(this, 62)))
+        val bottomBar = buildBottomBar()
+        root.addView(bottomBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Theme.dp(this, 62)))
 
+        // 顶部让出状态栏；tab 栏背景延伸至系统导航栏后面，内容让出手势条
+        root.setOnApplyWindowInsetsListener { v, insets ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val sys = insets.getInsets(android.view.WindowInsets.Type.systemBars())
+                v.setPadding(0, sys.top, 0, 0)
+                bottomBar.layoutParams = LinearLayout.LayoutParams(
+                    MATCH_PARENT, Theme.dp(this, 62) + sys.bottom)
+                bottomBar.setPadding(0, 0, 0, sys.bottom)
+            } else {
+                v.setPadding(0, insets.systemWindowInsetTop, 0, 0)
+                bottomBar.layoutParams = LinearLayout.LayoutParams(
+                    MATCH_PARENT, Theme.dp(this, 62) + insets.systemWindowInsetBottom)
+                bottomBar.setPadding(0, 0, 0, insets.systemWindowInsetBottom)
+            }
+            insets
+        }
         setContentView(root)
         switchTab(currentTab)
     }

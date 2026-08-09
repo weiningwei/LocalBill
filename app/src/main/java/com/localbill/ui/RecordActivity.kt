@@ -253,15 +253,22 @@ class RecordActivity : Activity() {
             keypadBox.visibility = if (hasFocus) View.GONE else View.VISIBLE
         }
 
-        // Android 15+ 不再由 adjustResize 自动压缩窗口，需手动处理 IME insets，
-        // 否则系统软键盘会直接遮挡底部备注输入框
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            root.setOnApplyWindowInsetsListener { v, insets ->
+        // Android 15+ 不再由 adjustResize 自动压缩窗口，需手动处理系统栏 insets：
+        // 顶部避开状态栏；备注聚焦（数字键盘隐藏）时底部让出输入法高度，
+        // 数字键盘显示时键盘延伸至导航栏后面，仅按键内容让出手势条
+        root.setOnApplyWindowInsetsListener { v, insets ->
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                val sys = insets.getInsets(android.view.WindowInsets.Type.systemBars())
                 val ime = insets.getInsets(android.view.WindowInsets.Type.ime())
-                v.setPadding(0, 0, 0,
-                    if (keypadBox.visibility == View.GONE) ime.bottom else 0)
-                insets
+                v.setPadding(0, sys.top, 0,
+                    if (keypadBox.visibility == View.GONE) ime.bottom.coerceAtLeast(sys.bottom) else 0)
+                keypadBox.setPadding(0, 0, 0,
+                    if (keypadBox.visibility == View.GONE) 0 else sys.bottom)
+            } else {
+                v.setPadding(0, insets.systemWindowInsetTop, 0,
+                    if (keypadBox.visibility == View.GONE) insets.systemWindowInsetBottom else 0)
             }
+            insets
         }
 
         setContentView(root)

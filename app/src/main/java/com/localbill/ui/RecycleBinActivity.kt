@@ -66,6 +66,7 @@ class RecycleBinActivity : Activity() {
         root.addView(emptyView, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         emptyView.visibility = View.GONE
 
+        UiKit.fitSystemBars(root)
         setContentView(root)
     }
 

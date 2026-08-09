@@ -3,9 +3,11 @@ package com.localbill.util
 import android.content.Context
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -91,5 +93,22 @@ object UiKit {
         d.cornerRadius = Theme.dp(ctx, radiusDp).toFloat()
         d.setColor(color)
         return d
+    }
+
+    /**
+     * 适配系统栏 insets：顶部留出状态栏高度，底部留出导航栏/输入法高度，
+     * 防止 edge-to-edge（Android 15+ 强制）下顶栏被状态栏遮挡。
+     */
+    fun fitSystemBars(view: View) {
+        view.setOnApplyWindowInsetsListener { v, insets ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.ime())
+                v.setPadding(0, bars.top, 0, bars.bottom)
+            } else {
+                v.setPadding(0, insets.systemWindowInsetTop, 0, insets.systemWindowInsetBottom)
+            }
+            insets
+        }
+        view.requestApplyInsets()
     }
 }
