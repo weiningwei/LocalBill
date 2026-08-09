@@ -44,7 +44,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
             setPadding(Theme.dp(host, 16), Theme.dp(host, 14), Theme.dp(host, 10), Theme.dp(host, 14))
         }
         val cardLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        cardLp.setMargins(Theme.dp(host, 12), Theme.dp(host, 10), Theme.dp(host, 12), Theme.dp(host, 6))
+        cardLp.setMargins(Theme.dp(host, 24), Theme.dp(host, 10), Theme.dp(host, 24), Theme.dp(host, 6))
         val left = UiKit.vertical(host)
         left.addView(UiKit.text(host, "当前账本", 12f, Theme.lightText(host)))
         left.addView(tvLedger)
@@ -90,7 +90,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
             isFocusable = true
         }
         val lp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        lp.setMargins(Theme.dp(host, 12), Theme.dp(host, 3), Theme.dp(host, 12), Theme.dp(host, 3))
+        lp.setMargins(Theme.dp(host, 24), Theme.dp(host, 3), Theme.dp(host, 24), Theme.dp(host, 3))
         r.addView(rowLeft(title, subtitle), LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
         val chevron = TextView(host).apply {
             text = "›"
@@ -114,7 +114,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
             setPadding(Theme.dp(host, 16), Theme.dp(host, 8), Theme.dp(host, 14), Theme.dp(host, 8))
         }
         val lp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        lp.setMargins(Theme.dp(host, 12), Theme.dp(host, 3), Theme.dp(host, 12), Theme.dp(host, 3))
+        lp.setMargins(Theme.dp(host, 24), Theme.dp(host, 3), Theme.dp(host, 24), Theme.dp(host, 3))
         r.addView(rowLeft(title, subtitle), LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
         val sw = Switch(host).apply {
             isChecked = checkedSupplier()

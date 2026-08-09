@@ -82,7 +82,7 @@ class BackupActivity : Activity() {
             isFocusable = true
         }
         val lp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        lp.setMargins(Theme.dp(ctx, 12), Theme.dp(ctx, 4), Theme.dp(ctx, 12), Theme.dp(ctx, 4))
+        lp.setMargins(Theme.dp(ctx, 24), Theme.dp(ctx, 4), Theme.dp(ctx, 24), Theme.dp(ctx, 4))
         val dot = UiKit.circle(ctx, color, 12)
         row.addView(dot)
         val c = UiKit.vertical(ctx).apply {

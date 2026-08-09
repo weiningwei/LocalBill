@@ -180,7 +180,7 @@ class RecordActivity : Activity() {
             setPadding(Theme.dp(ctx, 14), Theme.dp(ctx, 8), Theme.dp(ctx, 10), Theme.dp(ctx, 8))
         }
         val infoLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        infoLp.setMargins(Theme.dp(ctx, 12), Theme.dp(ctx, 6), Theme.dp(ctx, 12), Theme.dp(ctx, 4))
+        infoLp.setMargins(Theme.dp(ctx, 24), Theme.dp(ctx, 6), Theme.dp(ctx, 24), Theme.dp(ctx, 4))
 
         tvAccount = UiKit.text(ctx, "", 14f, Theme.mainText(ctx))
         tvDate = UiKit.text(ctx, "", 14f, Theme.mainText(ctx))
@@ -213,7 +213,7 @@ class RecordActivity : Activity() {
             setPadding(Theme.dp(ctx, 14), Theme.dp(ctx, 6), Theme.dp(ctx, 10), Theme.dp(ctx, 6))
         }
         val remarkLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        remarkLp.setMargins(Theme.dp(ctx, 12), 0, Theme.dp(ctx, 12), Theme.dp(ctx, 4))
+        remarkLp.setMargins(Theme.dp(ctx, 24), 0, Theme.dp(ctx, 24), Theme.dp(ctx, 4))
         remarkRow.addView(UiKit.text(ctx, "备注", 14f, Theme.subText(ctx)))
         if (!::etRemark.isInitialized) etRemark = EditText(ctx)
         etRemark.setTextSize(14f)

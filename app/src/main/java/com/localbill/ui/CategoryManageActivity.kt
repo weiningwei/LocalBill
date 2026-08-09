@@ -233,8 +233,8 @@ class CategoryManageActivity : Activity() {
                 setBackgroundColor(Theme.surface(this@CategoryManageActivity))
             }
             val lp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(this@CategoryManageActivity, 56))
-            lp.setMargins(Theme.dp(this@CategoryManageActivity, 12), Theme.dp(this@CategoryManageActivity, 2),
-                Theme.dp(this@CategoryManageActivity, 12), Theme.dp(this@CategoryManageActivity, 2))
+            lp.setMargins(Theme.dp(this@CategoryManageActivity, 24), Theme.dp(this@CategoryManageActivity, 2),
+                Theme.dp(this@CategoryManageActivity, 24), Theme.dp(this@CategoryManageActivity, 2))
 
             val dot = UiKit.catIcon(this@CategoryManageActivity, cat, 34)
             val dotWrap = UiKit.horizontal(this@CategoryManageActivity).apply {

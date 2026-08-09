@@ -100,8 +100,8 @@ class RecycleBinActivity : Activity() {
                 background = UiKit.rounded(this@RecycleBinActivity, Theme.surface(this@RecycleBinActivity), 12)
             }
             val lp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-            lp.setMargins(Theme.dp(this@RecycleBinActivity, 12), Theme.dp(this@RecycleBinActivity, 3),
-                Theme.dp(this@RecycleBinActivity, 12), Theme.dp(this@RecycleBinActivity, 3))
+            lp.setMargins(Theme.dp(this@RecycleBinActivity, 24), Theme.dp(this@RecycleBinActivity, 3),
+                Theme.dp(this@RecycleBinActivity, 24), Theme.dp(this@RecycleBinActivity, 3))
 
             val top = UiKit.horizontal(this@RecycleBinActivity).apply {
                 gravity = Gravity.CENTER_VERTICAL

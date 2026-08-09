@@ -52,7 +52,7 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
         // 汇总卡片
         val card = UiKit.vertical(host).apply { background = UiKit.rounded(host, Theme.surface(host), 14) }
         val cardLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        cardLp.setMargins(Theme.dp(host, 12), Theme.dp(host, 4), Theme.dp(host, 12), Theme.dp(host, 4))
+        cardLp.setMargins(Theme.dp(host, 24), Theme.dp(host, 4), Theme.dp(host, 24), Theme.dp(host, 4))
         val row = UiKit.horizontal(host)
         row.gravity = Gravity.CENTER
         row.addView(col("支出", tvExpense, C.EXPENSE), weight(1))

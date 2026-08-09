@@ -179,8 +179,8 @@ class AccountManageActivity : Activity() {
                 setBackgroundColor(Theme.surface(this@AccountManageActivity))
             }
             val lp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(this@AccountManageActivity, 60))
-            lp.setMargins(Theme.dp(this@AccountManageActivity, 12), Theme.dp(this@AccountManageActivity, 2),
-                Theme.dp(this@AccountManageActivity, 12), Theme.dp(this@AccountManageActivity, 2))
+            lp.setMargins(Theme.dp(this@AccountManageActivity, 24), Theme.dp(this@AccountManageActivity, 2),
+                Theme.dp(this@AccountManageActivity, 24), Theme.dp(this@AccountManageActivity, 2))
 
             val circle = UiKit.horizontal(this@AccountManageActivity).apply {
                 gravity = Gravity.CENTER

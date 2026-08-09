@@ -4,7 +4,6 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 
 import android.content.Context
 import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -27,9 +26,9 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
 
     private var monthKey = DateUtil.monthNow()
     private val tvMonth = UiKit.text(host, "", 18f, Theme.mainText(host), bold = true, gravity = Gravity.CENTER)
-    private val tvExpense = UiKit.text(host, "0.00", 22f, C.EXPENSE, bold = true)
-    private val tvIncome = UiKit.text(host, "0.00", 16f, C.INCOME, bold = true)
-    private val tvBalance = UiKit.text(host, "0.00", 16f, Theme.subText(host), bold = true)
+    private val tvExpense = UiKit.text(host, "0.00", 36f, 0xFFFFFFFF.toInt(), bold = true)
+    private val tvIncome = UiKit.text(host, "0.00", 14f, 0xFFFFFFFF.toInt(), bold = true)
+    private val tvBalance = UiKit.text(host, "0.00", 14f, 0xFFFFFFFF.toInt(), bold = true)
     private val listContainer = UiKit.vertical(host)
 
     init {
@@ -40,7 +39,7 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
     }
 
     private fun buildUi() {
-        // 月份切换 + 记一笔
+        // 月份切换
         val monthRow = UiKit.horizontal(host).apply {
             gravity = Gravity.CENTER
             setPadding(0, Theme.dp(host, 10), 0, Theme.dp(host, 2))
@@ -50,25 +49,39 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
         monthRow.addView(arrow(1))
         addView(monthRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 44)))
 
+        // 本月统计大卡片
+        val card = UiKit.vertical(host).apply {
+            gravity = Gravity.CENTER
+            background = UiKit.gradientPrimary(host, 18)
+        }
+        val cardLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+        cardLp.setMargins(Theme.dp(host, 24), Theme.dp(host, 6), Theme.dp(host, 24), Theme.dp(host, 2))
+        card.addView(UiKit.text(host, "本月支出", 13f, 0xCCFFFFFF.toInt()))
+        card.addView(tvExpense, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+            topMargin = Theme.dp(host, 2)
+        })
+        val divider = View(host).apply {
+            background = UiKit.rounded(host, 0x40FFFFFF.toInt(), 1)
+        }
+        val dividerLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 1))
+        dividerLp.setMargins(Theme.dp(host, 20), Theme.dp(host, 10), Theme.dp(host, 20), Theme.dp(host, 10))
+        card.addView(divider, dividerLp)
+        val row = UiKit.horizontal(host)
+        row.gravity = Gravity.CENTER
+        row.addView(heroCol(host.getString(R.string.month_income), tvIncome), weight(1))
+        row.addView(heroCol(host.getString(R.string.month_balance), tvBalance), weight(1))
+        card.addView(row, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+            bottomMargin = Theme.dp(host, 14)
+        })
+        addView(card, cardLp)
+
         // 记一笔按钮
         val recordBtn = UiKit.text(host, "＋ 记一笔", 14f, 0xFFFFFFFF.toInt(), bold = true, gravity = Gravity.CENTER)
         recordBtn.background = UiKit.rounded(host, C.PRIMARY, 20)
         val recordLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 40))
-        recordLp.setMargins(Theme.dp(host, 12), Theme.dp(host, 2), Theme.dp(host, 12), Theme.dp(host, 2))
+        recordLp.setMargins(Theme.dp(host, 24), Theme.dp(host, 2), Theme.dp(host, 24), Theme.dp(host, 2))
         recordBtn.setOnClickListener { host.openRecord(null) }
         addView(recordBtn, recordLp)
-
-        // 汇总卡片
-        val card = UiKit.vertical(host).apply { background = UiKit.rounded(host, Theme.surface(host), 14) }
-        val cardLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
-        cardLp.setMargins(Theme.dp(host, 12), Theme.dp(host, 6), Theme.dp(host, 12), Theme.dp(host, 6))
-        val row = UiKit.horizontal(host)
-        row.gravity = Gravity.CENTER
-        row.addView(col(host.getString(R.string.month_expense), tvExpense, C.EXPENSE), weight(1))
-        row.addView(col(host.getString(R.string.month_income), tvIncome, C.INCOME), weight(1))
-        row.addView(col(host.getString(R.string.month_balance), tvBalance, Theme.subText(host)), weight(1))
-        card.addView(row, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 92)))
-        addView(card, cardLp)
 
         // 今日明细
         val label = UiKit.horizontal(host).apply {
@@ -98,10 +111,10 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
         return btn
     }
 
-    private fun col(label: String, amount: TextView, color: Int): LinearLayout {
+    private fun heroCol(label: String, amount: TextView): LinearLayout {
         val c = UiKit.vertical(host)
         c.gravity = Gravity.CENTER
-        c.addView(UiKit.text(host, label, 12f, Theme.subText(host)))
+        c.addView(UiKit.text(host, label, 12f, 0xB3FFFFFF.toInt()))
         c.addView(amount, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
             setMargins(0, Theme.dp(host, 2), 0, 0)
         })
@@ -145,7 +158,7 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
         }
         row.setOnClickListener { host.openRecord(bill.id) }
         val lp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 58))
-        lp.setMargins(Theme.dp(host, 12), Theme.dp(host, 3), Theme.dp(host, 12), Theme.dp(host, 3))
+        lp.setMargins(Theme.dp(host, 24), Theme.dp(host, 3), Theme.dp(host, 24), Theme.dp(host, 3))
 
         val dot = UiKit.catIcon(host, cat, 36)
         val dotWrap = UiKit.horizontal(host).apply {

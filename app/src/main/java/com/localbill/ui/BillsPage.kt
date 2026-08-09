@@ -231,7 +231,7 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
             true
         }
         val lp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 58))
-        lp.setMargins(Theme.dp(host, 12), Theme.dp(host, 3), Theme.dp(host, 12), Theme.dp(host, 3))
+        lp.setMargins(Theme.dp(host, 24), Theme.dp(host, 3), Theme.dp(host, 24), Theme.dp(host, 3))
 
         val dot = UiKit.catIcon(host, cat, 36)
         val dotWrap = UiKit.horizontal(host).apply {

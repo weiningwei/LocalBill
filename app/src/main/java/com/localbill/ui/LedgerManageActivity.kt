@@ -136,8 +136,8 @@ class LedgerManageActivity : Activity() {
                 setBackgroundColor(Theme.surface(this@LedgerManageActivity))
             }
             val lp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(this@LedgerManageActivity, 56))
-            lp.setMargins(Theme.dp(this@LedgerManageActivity, 12), Theme.dp(this@LedgerManageActivity, 2),
-                Theme.dp(this@LedgerManageActivity, 12), Theme.dp(this@LedgerManageActivity, 2))
+            lp.setMargins(Theme.dp(this@LedgerManageActivity, 24), Theme.dp(this@LedgerManageActivity, 2),
+                Theme.dp(this@LedgerManageActivity, 24), Theme.dp(this@LedgerManageActivity, 2))
 
             val dot = UiKit.circle(this@LedgerManageActivity, if (active) C.PRIMARY else Theme.lightText(this@LedgerManageActivity), 14)
             val dotWrap = UiKit.horizontal(this@LedgerManageActivity).apply {

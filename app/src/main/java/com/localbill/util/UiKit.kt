@@ -92,4 +92,14 @@ object UiKit {
         d.setColor(color)
         return d
     }
+
+    /** 主题主色渐变圆角背景 */
+    fun gradientPrimary(ctx: Context, radiusDp: Int): GradientDrawable {
+        val d = GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            intArrayOf(C.PRIMARY, C.PRIMARY_DARK)
+        )
+        d.cornerRadius = Theme.dp(ctx, radiusDp).toFloat()
+        return d
+    }
 }
