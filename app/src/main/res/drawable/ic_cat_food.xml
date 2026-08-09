@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 碗 -->
+    <path
+        android:pathData="M4,12.5 C4,8 7.6,5 12,5 C16.4,5 20,8 20,12.5 C20,14.7 16.4,16.5 12,16.5 C7.6,16.5 4,14.7 4,12.5 Z"
+        android:fillColor="#FFFFFF" />
+    <!-- 碗口线 -->
+    <path
+        android:pathData="M3.5,12.5 H20.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round" />
+    <!-- 筷子 -->
+    <path
+        android:pathData="M15,4.5 L12,7.5 M18,4.5 L15,7.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round" />
+</vector>

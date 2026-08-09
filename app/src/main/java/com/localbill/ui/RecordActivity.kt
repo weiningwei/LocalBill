@@ -23,6 +23,7 @@ import com.localbill.model.Account
 import com.localbill.model.Category
 import com.localbill.model.Kinds
 import com.localbill.util.C
+import com.localbill.util.CatIcon
 import com.localbill.util.DateUtil
 import com.localbill.util.Money
 import com.localbill.util.Prefs
@@ -597,14 +598,10 @@ class RecordActivity : Activity() {
                 background = UiKit.rounded(this@RecordActivity, cat.color, 20)
             }
             val lp = LinearLayout.LayoutParams(Theme.dp(this@RecordActivity, 40), Theme.dp(this@RecordActivity, 40))
-            val ch = TextView(this@RecordActivity).apply {
-                text = if (cat.name.isEmpty()) "?" else cat.name.substring(0, 1)
-                setTextColor(0xFFFFFFFF.toInt())
-                setTextSize(16f)
-                setTypeface(typeface, Typeface.BOLD)
-                gravity = Gravity.CENTER
+            val icon = ImageView(this@RecordActivity).apply {
+                setImageResource(CatIcon.of(cat))
             }
-            circle.addView(ch, LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT))
+            circle.addView(icon, LinearLayout.LayoutParams(Theme.dp(this@RecordActivity, 24), Theme.dp(this@RecordActivity, 24)))
             box.addView(circle, lp)
             val name = UiKit.text(this@RecordActivity, cat.name, 12f,
                 if (selected) cat.color else Theme.mainText(this@RecordActivity))

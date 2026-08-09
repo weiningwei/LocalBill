@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 书本主体 -->
+    <path
+        android:pathData="M12,4.5 C10,3.2 6.5,3 4.5,3.5 V18.5 C6.5,18 10,18.2 12,19.5 C14,18.2 17.5,18 19.5,18.5 V3.5 C17.5,3 14,3.2 12,4.5 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round" />
+    <!-- 书脊 -->
+    <path
+        android:pathData="M12,4.5 V19.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>

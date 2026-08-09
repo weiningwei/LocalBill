@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 红包主体 -->
+    <path
+        android:pathData="M4,5.5 H20 V18.5 A2,2 0 0,1 18,20.5 H6 A2,2 0 0,1 4,18.5 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round" />
+    <!-- 封口弧线 -->
+    <path
+        android:pathData="M4,8.5 C8,10.5 16,10.5 20,8.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+    <!-- 开口 -->
+    <path
+        android:pathData="M4,8.5 L12,12.5 L20,8.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    <!-- 中缝 -->
+    <path
+        android:pathData="M12,12.5 V20.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>

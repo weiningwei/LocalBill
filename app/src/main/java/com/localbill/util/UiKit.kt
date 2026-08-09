@@ -6,8 +6,10 @@ import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.localbill.model.Category
 
 object UiKit {
 
@@ -54,6 +56,33 @@ object UiKit {
             Theme.dp(ctx, sizeDp), Theme.dp(ctx, sizeDp)
         )
         return dot
+    }
+
+    /** 彩色圆 + 分类图标 */
+    fun catIcon(ctx: Context, cat: Category?, sizeDp: Int): View {
+        val wrap = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            background = circleBg(ctx, cat?.color ?: C.ANT_GRAY, sizeDp)
+        }
+        if (cat != null) {
+            val iv = ImageView(ctx).apply {
+                setImageResource(CatIcon.of(cat))
+            }
+            val s = (sizeDp * 0.58f).toInt()
+            wrap.addView(iv, LinearLayout.LayoutParams(Theme.dp(ctx, s), Theme.dp(ctx, s)))
+        }
+        wrap.layoutParams = ViewGroup.LayoutParams(
+            Theme.dp(ctx, sizeDp), Theme.dp(ctx, sizeDp)
+        )
+        return wrap
+    }
+
+    private fun circleBg(ctx: Context, color: Int, sizeDp: Int): GradientDrawable {
+        val d = GradientDrawable()
+        d.shape = GradientDrawable.OVAL
+        d.setColor(color)
+        return d
     }
 
     fun rounded(ctx: Context, color: Int, radiusDp: Int): GradientDrawable {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 钱包主体 -->
+    <path
+        android:pathData="M4,7.5 H20 V17.5 A1.5,1.5 0 0,1 18.5,19 H5.5 A1.5,1.5 0 0,1 4,17.5 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round" />
+    <!-- 翻盖 -->
+    <path
+        android:pathData="M4,7.5 L12,12 L20,7.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+    <!-- 硬币 -->
+    <path
+        android:pathData="M9.5,15 A1.5,1.5 0 1,0 12.5,15 A1.5,1.5 0 1,0 9.5,15"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6" />
+</vector>

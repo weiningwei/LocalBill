@@ -139,7 +139,7 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
         val lp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 58))
         lp.setMargins(Theme.dp(host, 12), Theme.dp(host, 3), Theme.dp(host, 12), Theme.dp(host, 3))
 
-        val dot = UiKit.circle(host, cat?.color ?: C.ANT_GRAY, 36)
+        val dot = UiKit.catIcon(host, cat, 36)
         val dotWrap = UiKit.horizontal(host).apply {
             gravity = Gravity.CENTER
             setPadding(Theme.dp(host, 6), 0, Theme.dp(host, 8), 0)

@@ -236,7 +236,7 @@ class CategoryManageActivity : Activity() {
             lp.setMargins(Theme.dp(this@CategoryManageActivity, 12), Theme.dp(this@CategoryManageActivity, 2),
                 Theme.dp(this@CategoryManageActivity, 12), Theme.dp(this@CategoryManageActivity, 2))
 
-            val dot = UiKit.circle(this@CategoryManageActivity, cat.color, 34)
+            val dot = UiKit.catIcon(this@CategoryManageActivity, cat, 34)
             val dotWrap = UiKit.horizontal(this@CategoryManageActivity).apply {
                 gravity = Gravity.CENTER
                 setPadding(Theme.dp(this@CategoryManageActivity, 6), 0, Theme.dp(this@CategoryManageActivity, 8), 0)
