@@ -38,8 +38,18 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(if (Prefs.darkMode) R.style.Theme_LocalBill_Dark else R.style.Theme_LocalBill)
         super.onCreate(savedInstanceState)
+        currentTab = savedInstanceState?.getInt(STATE_TAB, 0) ?: 0
         buildUi()
         checkPasswordLock()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(STATE_TAB, currentTab)
+    }
+
+    companion object {
+        private const val STATE_TAB = "state_tab"
     }
 
     override fun onResume() {
@@ -78,7 +88,7 @@ class MainActivity : Activity() {
         root.addView(buildBottomBar(), LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Theme.dp(this, 62)))
 
         setContentView(root)
-        switchTab(0)
+        switchTab(currentTab)
     }
 
     private fun buildBottomBar(): LinearLayout {
