@@ -29,10 +29,10 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
     private var year = DateUtil.yearOf(DateUtil.monthNow())
 
     private val tvNav = UiKit.text(host, "", 16f, Theme.mainText(host), bold = true, gravity = Gravity.CENTER)
-    private val tvSummaryLabel = UiKit.text(host, "", 13f, 0xCCFFFFFF.toInt())
-    private val tvExpense = UiKit.text(host, "", 34f, 0xFFFFFFFF.toInt(), bold = true)
-    private val tvIncome = UiKit.text(host, "", 14f, 0xFFFFFFFF.toInt(), bold = true)
-    private val tvBalance = UiKit.text(host, "", 14f, 0xFFFFFFFF.toInt(), bold = true)
+    private val tvSummaryLabel = UiKit.text(host, "", 13f, Theme.subText(host))
+    private val tvExpense = UiKit.text(host, "", 34f, C.EXPENSE, bold = true)
+    private val tvIncome = UiKit.text(host, "", 16f, C.INCOME, bold = true)
+    private val tvBalance = UiKit.text(host, "", 16f, Theme.mainText(host), bold = true)
     private val listContainer = UiKit.vertical(host)
     private val segButtons = ArrayList<TextView>()
 
@@ -67,10 +67,11 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
         navRow.addView(navArrow(1))
         addView(navRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 42)))
 
-        // 统计卡片：渐变主色突出
+        // 统计卡片：surface 配色，对比清晰但不突兀
         val card = UiKit.vertical(host).apply {
             gravity = Gravity.CENTER
-            background = UiKit.gradientPrimary(host, 18)
+            background = UiKit.rounded(host, Theme.surface(host), 18)
+            setPadding(Theme.dp(host, 20), Theme.dp(host, 14), Theme.dp(host, 20), Theme.dp(host, 14))
         }
         val cardLp = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
         cardLp.setMargins(Theme.dp(host, 24), Theme.dp(host, 4), Theme.dp(host, 24), Theme.dp(host, 4))
@@ -79,18 +80,16 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
             topMargin = Theme.dp(host, 2)
         })
         val divider = View(host).apply {
-            background = UiKit.rounded(host, 0x40FFFFFF.toInt(), 1)
+            background = UiKit.rounded(host, Theme.divider(host), 1)
         }
         val dividerLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 1))
-        dividerLp.setMargins(Theme.dp(host, 20), Theme.dp(host, 10), Theme.dp(host, 20), Theme.dp(host, 10))
+        dividerLp.setMargins(Theme.dp(host, 16), Theme.dp(host, 10), Theme.dp(host, 16), Theme.dp(host, 10))
         card.addView(divider, dividerLp)
         val summary = UiKit.horizontal(host)
         summary.gravity = Gravity.CENTER
         summary.addView(heroStat("收入", tvIncome), sumParams())
         summary.addView(heroStat("结余", tvBalance), sumParams())
-        card.addView(summary, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
-            bottomMargin = Theme.dp(host, 14)
-        })
+        card.addView(summary, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         addView(card, cardLp)
 
         val scroll = ScrollView(host)
@@ -157,7 +156,7 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
     private fun heroStat(label: String, tv: TextView): LinearLayout {
         val c = UiKit.vertical(host)
         c.gravity = Gravity.CENTER
-        c.addView(UiKit.text(host, label, 12f, 0xB3FFFFFF.toInt()))
+        c.addView(UiKit.text(host, label, 12f, Theme.subText(host)))
         c.addView(tv, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
             setMargins(0, Theme.dp(host, 2), 0, 0)
         })
