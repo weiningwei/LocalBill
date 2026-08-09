@@ -36,6 +36,7 @@ data class Bill(
     val amount: Long,
     val remark: String,
     val day: Int,
+    val time: Int,
     val createdAt: Long,
     val isDeleted: Int,
     val deletedAt: Long

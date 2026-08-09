@@ -3,20 +3,18 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.GridView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import com.localbill.App
@@ -30,6 +28,8 @@ import com.localbill.util.Money
 import com.localbill.util.Prefs
 import com.localbill.util.Theme
 import com.localbill.util.UiKit
+import java.util.Calendar
+import java.util.Locale
 
 class RecordActivity : Activity() {
     private val ctx: Context get() = this@RecordActivity
@@ -47,6 +47,7 @@ class RecordActivity : Activity() {
     private lateinit var subRow: LinearLayout
     private lateinit var tvAccount: TextView
     private lateinit var tvDate: TextView
+    private lateinit var tvTime: TextView
     private lateinit var etRemark: EditText
 
     private var topCats: List<Category> = emptyList()
@@ -56,6 +57,7 @@ class RecordActivity : Activity() {
     private var accounts: List<Account> = emptyList()
     private var selectedAccount: Account? = null
     private var day = DateUtil.today()
+    private var time = DateUtil.timeNow()
 
     private var amountStr = ""
     private var topAdapter: CatAdapter? = null
@@ -81,6 +83,7 @@ class RecordActivity : Activity() {
             if (bill != null) {
                 kind = bill.kind
                 day = bill.day
+                time = bill.time
                 selectedAccount = accounts.firstOrNull { it.id == bill.accountId }
                 val cat = App.db.categoryById(bill.categoryId)
                 if (cat != null) {
@@ -177,8 +180,10 @@ class RecordActivity : Activity() {
 
         tvAccount = UiKit.text(ctx, "", 14f, Theme.mainText(ctx))
         tvDate = UiKit.text(ctx, "", 14f, Theme.mainText(ctx))
+        tvTime = UiKit.text(ctx, "", 14f, Theme.mainText(ctx))
         tvAccount.setOnClickListener { pickAccount() }
         tvDate.setOnClickListener { pickDate() }
+        tvTime.setOnClickListener { pickTime() }
         val iconWrap = UiKit.horizontal(ctx).apply { gravity = Gravity.CENTER_VERTICAL }
         val icon = ImageView(ctx)
         icon.setImageResource(R.drawable.ic_calendar)
@@ -191,6 +196,9 @@ class RecordActivity : Activity() {
         })
         infoRow.addView(iconWrap)
         infoRow.addView(tvDate, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f).apply {
+            setMargins(Theme.dp(ctx, 6), 0, Theme.dp(ctx, 8), 0)
+        })
+        infoRow.addView(tvTime, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f).apply {
             setMargins(Theme.dp(ctx, 6), 0, Theme.dp(ctx, 8), 0)
         })
         root.addView(infoRow, infoLp)
@@ -351,21 +359,133 @@ class RecordActivity : Activity() {
 
     private fun pickDate() {
         val cal = DateUtil.calOf(day)
-        DatePickerDialog(
-            this,
-            { _, y, m, d ->
-                day = y * 10000 + (m + 1) * 100 + d
+        var selY = cal.get(Calendar.YEAR)
+        var selM = cal.get(Calendar.MONTH) + 1
+        var selD = cal.get(Calendar.DAY_OF_MONTH)
+
+        val yearCol = PickerColumn(ctx)
+        val monthCol = PickerColumn(ctx)
+        val dayCol = PickerColumn(ctx)
+
+        fun lastDay(y: Int, m: Int): Int = DateUtil.lastDayOfMonth(y * 100 + m) % 100
+
+        val years = (selY - 8..selY + 8).toList()
+        val months = (1..12).toList()
+
+        fun refreshDayCol() {
+            val max = lastDay(selY, selM)
+            if (selD > max) selD = max
+            dayCol.setData((1..max).map { "${it}日" }, selD - 1)
+        }
+
+        yearCol.setData(years.map { "${it}年" }, years.indexOf(selY))
+        monthCol.setData(months.map { "${it}月" }, selM - 1)
+        refreshDayCol()
+
+        yearCol.listView.setOnItemClickListener { _, _, p, _ ->
+            selY = years[p]
+            yearCol.select(p)
+            refreshDayCol()
+        }
+        monthCol.listView.setOnItemClickListener { _, _, p, _ ->
+            selM = months[p]
+            monthCol.select(p)
+            refreshDayCol()
+        }
+        dayCol.listView.setOnItemClickListener { _, _, p, _ ->
+            selD = p + 1
+            dayCol.select(p)
+        }
+
+        val body = UiKit.horizontal(ctx).apply { gravity = Gravity.CENTER }
+        val colH = Theme.dp(ctx, 280)
+        body.addView(yearCol.listView, LinearLayout.LayoutParams(0, colH, 1f))
+        body.addView(monthCol.listView, LinearLayout.LayoutParams(0, colH, 1f))
+        body.addView(dayCol.listView, LinearLayout.LayoutParams(0, colH, 1f))
+
+        android.app.AlertDialog.Builder(ctx)
+            .setTitle("选择日期")
+            .setView(body)
+            .setPositiveButton("确定") { _, _ ->
+                day = selY * 10000 + selM * 100 + selD
                 refreshSelection()
-            },
-            cal.get(java.util.Calendar.YEAR),
-            cal.get(java.util.Calendar.MONTH),
-            cal.get(java.util.Calendar.DAY_OF_MONTH)
-        ).show()
+            }
+            .setNegativeButton("取消", null)
+            .show()
+    }
+
+    private fun pickTime() {
+        var selH = time / 3600
+        var selM = (time % 3600) / 60
+
+        val hourCol = PickerColumn(ctx)
+        val minCol = PickerColumn(ctx)
+        hourCol.setData((0..23).map { String.format(Locale.CHINA, "%02d时", it) }, selH)
+        minCol.setData((0..59).map { String.format(Locale.CHINA, "%02d分", it) }, selM)
+        hourCol.listView.setOnItemClickListener { _, _, p, _ -> hourCol.select(p); selH = p }
+        minCol.listView.setOnItemClickListener { _, _, p, _ -> minCol.select(p); selM = p }
+
+        val body = UiKit.horizontal(ctx).apply { gravity = Gravity.CENTER }
+        val colH = Theme.dp(ctx, 280)
+        body.addView(hourCol.listView, LinearLayout.LayoutParams(0, colH, 1f))
+        body.addView(minCol.listView, LinearLayout.LayoutParams(0, colH, 1f))
+
+        android.app.AlertDialog.Builder(ctx)
+            .setTitle("选择时间")
+            .setView(body)
+            .setPositiveButton("确定") { _, _ ->
+                time = selH * 3600 + selM * 60
+                refreshSelection()
+            }
+            .setNegativeButton("取消", null)
+            .show()
+    }
+
+    /** 列表式选择列：显示一组中文选项，点选后高亮 */
+    private inner class PickerColumn(context: Context) {
+        val listView = ListView(context)
+        private var items: List<String> = emptyList()
+        private var selected: Int = 0
+        private val adapter = object : BaseAdapter() {
+            override fun getCount(): Int = items.size
+            override fun getItem(p: Int): Any = items[p]
+            override fun getItemId(p: Int): Long = p.toLong()
+            override fun getView(p: Int, cv: View?, parent: ViewGroup?): View {
+                val tv = (cv as? TextView) ?: UiKit.text(context, "", 14f,
+                    Theme.mainText(context), gravity = Gravity.CENTER).apply {
+                    setPadding(0, Theme.dp(context, 12), 0, Theme.dp(context, 12))
+                }
+                tv.text = items[p]
+                val sel = p == selected
+                tv.setTextColor(if (sel) C.PRIMARY else Theme.mainText(context))
+                tv.setTypeface(tv.typeface, if (sel) Typeface.BOLD else Typeface.NORMAL)
+                return tv
+            }
+        }
+
+        init {
+            listView.adapter = adapter
+            listView.divider = null
+            listView.setSelector(android.R.color.transparent)
+        }
+
+        fun setData(newItems: List<String>, newSelected: Int) {
+            items = newItems
+            selected = newSelected
+            adapter.notifyDataSetChanged()
+            listView.post { listView.setSelection(newSelected) }
+        }
+
+        fun select(p: Int) {
+            selected = p
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun refreshSelection() {
         tvAccount.text = selectedAccount?.name ?: "无账户"
-        tvDate.text = DateUtil.fullDate(day)
+        tvDate.text = DateUtil.dayTitle(day)
+        tvTime.text = DateUtil.timeText(time)
         topAdapter?.notifyDataSetChanged()
         subAdapter?.notifyDataSetChanged()
     }
@@ -386,9 +506,9 @@ class RecordActivity : Activity() {
         val remark = etRemark.text.toString().trim()
 
         if (editId > 0) {
-            App.db.updateBill(editId, accountId, catId, kind, cents, remark, day)
+            App.db.updateBill(editId, accountId, catId, kind, cents, remark, day, time)
         } else {
-            App.db.addBill(ledgerId, accountId, catId, kind, cents, remark, day)
+            App.db.addBill(ledgerId, accountId, catId, kind, cents, remark, day, time)
         }
         Prefs.rememberRecordDay(day)
         Toast.makeText(ctx, R.string.toast_saved, Toast.LENGTH_SHORT).show()

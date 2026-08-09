@@ -150,8 +150,12 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
         center.gravity = Gravity.CENTER_VERTICAL
         val name = cat?.name ?: "未知"
         center.addView(UiKit.text(host, name, 15f, Theme.mainText(host)))
-        val sub = if (bill.remark.isNotEmpty()) bill.remark
-        else account?.name ?: ""
+        val timeStr = DateUtil.timeText(bill.time)
+        val sub = when {
+            bill.remark.isNotEmpty() -> "$timeStr · ${bill.remark}"
+            account != null -> "$timeStr · ${account.name}"
+            else -> timeStr
+        }
         if (sub.isNotEmpty()) {
             center.addView(UiKit.text(host, sub, 12f, Theme.lightText(host)))
         }

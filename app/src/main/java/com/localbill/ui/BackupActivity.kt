@@ -158,6 +158,7 @@ class BackupActivity : Activity() {
     private fun billJson(b: Bill): JSONObject = JSONObject().apply {
         put("id", b.id); put("ledgerId", b.ledgerId); put("accountId", b.accountId); put("categoryId", b.categoryId)
         put("kind", b.kind); put("amount", b.amount); put("remark", b.remark); put("day", b.day)
+        put("time", b.time)
         put("createdAt", b.createdAt); put("isDeleted", b.isDeleted); put("deletedAt", b.deletedAt)
     }
 
@@ -208,6 +209,7 @@ class BackupActivity : Activity() {
                 val o = billArr.getJSONObject(i)
                 bills.add(Bill(o.getLong("id"), o.getLong("ledgerId"), o.getLong("accountId"), o.getLong("categoryId"),
                     o.getInt("kind"), o.getLong("amount"), o.optString("remark"), o.getInt("day"),
+                    o.optInt("time", 0),
                     o.getLong("createdAt"), o.getInt("isDeleted"), o.getLong("deletedAt")))
             }
 

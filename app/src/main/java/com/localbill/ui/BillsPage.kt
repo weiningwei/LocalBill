@@ -243,10 +243,11 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
         val center = UiKit.vertical(host)
         center.gravity = Gravity.CENTER_VERTICAL
         val catName = cat?.name ?: "未知"
+        val timeStr = DateUtil.timeText(bill.time)
         val sub = when {
-            bill.remark.isNotEmpty() -> bill.remark
-            account != null -> account.name
-            else -> ""
+            bill.remark.isNotEmpty() -> "$timeStr · ${bill.remark}"
+            account != null -> "$timeStr · ${account.name}"
+            else -> timeStr
         }
         center.addView(UiKit.text(host, catName, 15f, Theme.mainText(host)))
         if (sub.isNotEmpty()) center.addView(UiKit.text(host, sub, 12f, Theme.lightText(host)))

@@ -12,7 +12,7 @@ import com.localbill.model.Kinds
 import com.localbill.model.Ledger
 import com.localbill.util.C
 
-class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1) {
+class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 2) {
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
@@ -52,6 +52,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
                 amount INTEGER NOT NULL,
                 remark TEXT NOT NULL DEFAULT '',
                 day INTEGER NOT NULL,
+                time INTEGER NOT NULL DEFAULT 0,
                 created_at INTEGER NOT NULL,
                 is_deleted INTEGER NOT NULL DEFAULT 0,
                 deleted_at INTEGER NOT NULL DEFAULT 0)"""
@@ -62,7 +63,9 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
         seed(db)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {}
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        // 无需兼容旧版本：schema 变更直接维护在 onCreate，DB 版本号用于标识当前结构
+    }
 
     private fun seed(db: SQLiteDatabase) {
         db.insert("ledger", null, ContentValues().apply {
@@ -335,7 +338,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
 
     fun addBill(
         ledgerId: Long, accountId: Long, categoryId: Long, kind: Int,
-        amount: Long, remark: String, day: Int
+        amount: Long, remark: String, day: Int, time: Int
     ): Long {
         val id = db.insert("bill", null, ContentValues().apply {
             put("ledger_id", ledgerId)
@@ -345,6 +348,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
             put("amount", amount)
             put("remark", remark)
             put("day", day)
+            put("time", time)
             put("created_at", System.currentTimeMillis())
             put("is_deleted", 0)
             put("deleted_at", 0)
@@ -355,7 +359,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
 
     fun updateBill(
         id: Long, accountId: Long, categoryId: Long, kind: Int,
-        amount: Long, remark: String, day: Int
+        amount: Long, remark: String, day: Int, time: Int
     ) {
         billById(id)?.let { applyBalance(it, -1) }
         db.update("bill", ContentValues().apply {
@@ -365,6 +369,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
             put("amount", amount)
             put("remark", remark)
             put("day", day)
+            put("time", time)
         }, "id=?", arrayOf(id.toString()))
         billById(id)?.let { applyBalance(it, +1) }
     }
@@ -394,7 +399,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
             "bill", null,
             "ledger_id=? AND is_deleted=0 AND day BETWEEN ? AND ?",
             arrayOf(ledgerId.toString(), fromDay.toString(), toDay.toString()),
-            null, null, "day DESC, created_at DESC"
+            null, null, "day DESC, time DESC, created_at DESC"
         ).use { c -> while (c.moveToNext()) out.add(cursorBill(c)) }
         return out
     }
@@ -506,6 +511,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
         c.getLong(c.getColumnIndexOrThrow("amount")),
         c.getString(c.getColumnIndexOrThrow("remark")),
         c.getInt(c.getColumnIndexOrThrow("day")),
+        c.getInt(c.getColumnIndexOrThrow("time")),
         c.getLong(c.getColumnIndexOrThrow("created_at")),
         c.getInt(c.getColumnIndexOrThrow("is_deleted")),
         c.getLong(c.getColumnIndexOrThrow("deleted_at"))
@@ -598,6 +604,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 1)
                 put("amount", b.amount)
                 put("remark", b.remark)
                 put("day", b.day)
+                put("time", b.time)
                 put("created_at", b.createdAt)
                 put("is_deleted", b.isDeleted)
                 put("deleted_at", b.deletedAt)

@@ -120,7 +120,7 @@ class RecycleBinActivity : Activity() {
                     Theme.dp(this@RecycleBinActivity, 12), 0)
             }
             mid.addView(UiKit.text(this@RecycleBinActivity,
-                "${DateUtil.fullDate(bill.day)}  ${if (bill.remark.isNotEmpty()) bill.remark else ""}",
+                "${DateUtil.fullDate(bill.day)} ${DateUtil.timeText(bill.time)}  ${if (bill.remark.isNotEmpty()) bill.remark else ""}",
                 12f, Theme.lightText(this@RecycleBinActivity)),
                 LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
             row.addView(mid)

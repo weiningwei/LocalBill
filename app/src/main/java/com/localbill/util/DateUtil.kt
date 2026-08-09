@@ -15,6 +15,21 @@ object DateUtil {
         return dayOf(cal)
     }
 
+    /** 当前时刻的秒数（距当天 00:00:00），范围 0..86399 */
+    fun timeNow(): Int {
+        val cal = Calendar.getInstance()
+        return cal.get(Calendar.HOUR_OF_DAY) * 3600 +
+                cal.get(Calendar.MINUTE) * 60 +
+                cal.get(Calendar.SECOND)
+    }
+
+    /** 秒数 -> "HH:mm"，如 14:05 */
+    fun timeText(sec: Int): String {
+        val h = sec / 3600
+        val m = (sec % 3600) / 60
+        return String.format(Locale.CHINA, "%02d:%02d", h, m)
+    }
+
     fun monthNow(): Int {
         val cal = Calendar.getInstance()
         return cal.get(Calendar.YEAR) * 100 + (cal.get(Calendar.MONTH) + 1)
