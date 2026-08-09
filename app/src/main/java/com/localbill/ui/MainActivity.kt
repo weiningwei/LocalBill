@@ -116,16 +116,17 @@ class MainActivity : Activity() {
             gravity = Gravity.CENTER
             setPadding(0, Theme.dp(this@MainActivity, 6), 0, Theme.dp(this@MainActivity, 4))
         }
-        val iv = ImageView(this)
-        iv.setImageResource(iconRes)
-        iv.layoutParams = LinearLayout.LayoutParams(Theme.dp(this, 24), Theme.dp(this, 24))
+        val iv = ImageView(this).apply {
+            setImageResource(iconRes)
+        }
+        v.addView(iv, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(this, 24)))
         val tv = TextView(this).apply {
             text = label
             textSize = 11f
+            gravity = Gravity.CENTER
             setPadding(0, Theme.dp(this@MainActivity, 2), 0, 0)
         }
-        v.addView(iv)
-        v.addView(tv)
+        v.addView(tv, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         v.tag = index
         v.setOnClickListener { switchTab(index) }
         tabs.add(v)
