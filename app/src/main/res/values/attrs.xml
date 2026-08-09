@@ -7,4 +7,8 @@
     <attr name="mainText" format="color" />
     <attr name="subText" format="color" />
     <attr name="lightText" format="color" />
+    <attr name="primaryColor" format="color" />
+    <attr name="primaryDark" format="color" />
+    <attr name="primaryLight" format="color" />
+    <attr name="primaryBg" format="color" />
 </resources>

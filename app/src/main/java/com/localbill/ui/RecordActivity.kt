@@ -72,7 +72,7 @@ class RecordActivity : Activity() {
     private val kindButtons = ArrayList<TextView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (Prefs.darkMode) R.style.Theme_LocalBill_Dark else R.style.Theme_LocalBill)
+        setTheme(Theme.themeStyle())
         super.onCreate(savedInstanceState)
         editId = intent.getLongExtra(EXTRA_ID, -1)
 
@@ -137,7 +137,7 @@ class RecordActivity : Activity() {
         topBar.addView(close)
         val title = UiKit.text(ctx, if (editId > 0) "编辑记录" else "记一笔", 17f, Theme.mainText(ctx), bold = true, gravity = Gravity.CENTER)
         topBar.addView(title, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
-        val save = UiKit.text(ctx, "保存", 16f, C.PRIMARY, bold = true)
+        val save = UiKit.text(ctx, "保存", 16f, Theme.primary(ctx), bold = true)
         save.setPadding(Theme.dp(ctx, 12), Theme.dp(ctx, 12), Theme.dp(ctx, 16), Theme.dp(ctx, 12))
         save.setOnClickListener { saveBill() }
         topBar.addView(save)
@@ -258,8 +258,8 @@ class RecordActivity : Activity() {
         }
         val lastRow = UiKit.horizontal(ctx)
         lastRow.addView(keyButton("0"), keyParams())
-        val saveBtn = UiKit.text(ctx, "记一笔", 17f, C.PRIMARY, bold = true, gravity = Gravity.CENTER)
-        saveBtn.background = UiKit.rounded(ctx, C.PRIMARY_BG, 10)
+        val saveBtn = UiKit.text(ctx, "记一笔", 17f, Theme.primary(ctx), bold = true, gravity = Gravity.CENTER)
+        saveBtn.background = UiKit.rounded(ctx, Theme.primaryBg(ctx), 10)
         saveBtn.setPadding(0, Theme.dp(ctx, 12), 0, Theme.dp(ctx, 12))
         saveBtn.setOnClickListener { saveBill() }
         lastRow.addView(saveBtn, LinearLayout.LayoutParams(0, MATCH_PARENT, 3f))
@@ -401,7 +401,7 @@ class RecordActivity : Activity() {
         for (tv in kindButtons) {
             val active = tv.tag as Int == kind
             tv.setTypeface(tv.typeface, if (active) Typeface.BOLD else Typeface.NORMAL)
-            tv.setTextColor(if (active) C.PRIMARY else Theme.subText(ctx))
+            tv.setTextColor(if (active) Theme.primary(ctx) else Theme.subText(ctx))
         }
     }
 
@@ -544,7 +544,7 @@ class RecordActivity : Activity() {
                 }
                 tv.text = items[p]
                 val sel = p == selected
-                tv.setTextColor(if (sel) C.PRIMARY else Theme.mainText(context))
+                tv.setTextColor(if (sel) Theme.primary(context) else Theme.mainText(context))
                 tv.setTypeface(tv.typeface, if (sel) Typeface.BOLD else Typeface.NORMAL)
                 return tv
             }

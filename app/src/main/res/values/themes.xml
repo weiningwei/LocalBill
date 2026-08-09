@@ -9,7 +9,7 @@
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:textColorPrimary">?attr/mainText</item>
         <item name="android:textColorSecondary">?attr/subText</item>
-        <item name="android:colorAccent">@color/primary</item>
+        <item name="android:colorAccent">@color/blue_primary</item>
         <item name="android:windowNoTitle">true</item>
         <item name="pageBg">@color/bg</item>
         <item name="surfaceColor">@color/card</item>
@@ -18,6 +18,10 @@
         <item name="mainText">@color/text_main</item>
         <item name="subText">@color/text_sub</item>
         <item name="lightText">@color/text_light</item>
+        <item name="primaryColor">@color/blue_primary</item>
+        <item name="primaryDark">@color/blue_primary_dark</item>
+        <item name="primaryLight">@color/blue_primary_light</item>
+        <item name="primaryBg">@color/blue_primary_bg</item>
     </style>
 
     <style name="Theme.LocalBill.Dark" parent="android:Theme.Material.NoActionBar">
@@ -29,7 +33,7 @@
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:textColorPrimary">?attr/mainText</item>
         <item name="android:textColorSecondary">?attr/subText</item>
-        <item name="android:colorAccent">@color/primary</item>
+        <item name="android:colorAccent">@color/blue_primary</item>
         <item name="android:windowNoTitle">true</item>
         <item name="pageBg">@color/bg_dark</item>
         <item name="surfaceColor">@color/card_dark</item>
@@ -38,5 +42,61 @@
         <item name="mainText">@color/text_main_dark</item>
         <item name="subText">@color/text_sub_dark</item>
         <item name="lightText">@color/text_light_dark</item>
+        <item name="primaryColor">@color/blue_primary</item>
+        <item name="primaryDark">@color/blue_primary_dark</item>
+        <item name="primaryLight">@color/blue_primary_light</item>
+        <item name="primaryBg">@color/blue_primary_bg_dark</item>
+    </style>
+
+    <!-- 蓝色主题 -->
+    <style name="Theme.LocalBill.Blue.Light" parent="Theme.LocalBill" />
+    <style name="Theme.LocalBill.Blue.Dark" parent="Theme.LocalBill.Dark" />
+
+    <!-- 绿色主题 -->
+    <style name="Theme.LocalBill.Green.Light" parent="Theme.LocalBill">
+        <item name="android:colorAccent">@color/green_primary</item>
+        <item name="primaryColor">@color/green_primary</item>
+        <item name="primaryDark">@color/green_primary_dark</item>
+        <item name="primaryLight">@color/green_primary_light</item>
+        <item name="primaryBg">@color/green_primary_bg</item>
+    </style>
+    <style name="Theme.LocalBill.Green.Dark" parent="Theme.LocalBill.Dark">
+        <item name="android:colorAccent">@color/green_primary</item>
+        <item name="primaryColor">@color/green_primary</item>
+        <item name="primaryDark">@color/green_primary_dark</item>
+        <item name="primaryLight">@color/green_primary_light</item>
+        <item name="primaryBg">@color/green_primary_bg_dark</item>
+    </style>
+
+    <!-- 紫色主题 -->
+    <style name="Theme.LocalBill.Purple.Light" parent="Theme.LocalBill">
+        <item name="android:colorAccent">@color/purple_primary</item>
+        <item name="primaryColor">@color/purple_primary</item>
+        <item name="primaryDark">@color/purple_primary_dark</item>
+        <item name="primaryLight">@color/purple_primary_light</item>
+        <item name="primaryBg">@color/purple_primary_bg</item>
+    </style>
+    <style name="Theme.LocalBill.Purple.Dark" parent="Theme.LocalBill.Dark">
+        <item name="android:colorAccent">@color/purple_primary</item>
+        <item name="primaryColor">@color/purple_primary</item>
+        <item name="primaryDark">@color/purple_primary_dark</item>
+        <item name="primaryLight">@color/purple_primary_light</item>
+        <item name="primaryBg">@color/purple_primary_bg_dark</item>
+    </style>
+
+    <!-- 橙色主题 -->
+    <style name="Theme.LocalBill.Orange.Light" parent="Theme.LocalBill">
+        <item name="android:colorAccent">@color/orange_primary</item>
+        <item name="primaryColor">@color/orange_primary</item>
+        <item name="primaryDark">@color/orange_primary_dark</item>
+        <item name="primaryLight">@color/orange_primary_light</item>
+        <item name="primaryBg">@color/orange_primary_bg</item>
+    </style>
+    <style name="Theme.LocalBill.Orange.Dark" parent="Theme.LocalBill.Dark">
+        <item name="android:colorAccent">@color/orange_primary</item>
+        <item name="primaryColor">@color/orange_primary</item>
+        <item name="primaryDark">@color/orange_primary_dark</item>
+        <item name="primaryLight">@color/orange_primary_light</item>
+        <item name="primaryBg">@color/orange_primary_bg_dark</item>
     </style>
 </resources>

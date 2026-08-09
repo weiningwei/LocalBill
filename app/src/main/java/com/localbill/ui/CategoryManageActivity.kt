@@ -39,7 +39,7 @@ class CategoryManageActivity : Activity() {
     private val kindButtons = ArrayList<TextView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (com.localbill.util.Prefs.darkMode) R.style.Theme_LocalBill_Dark else R.style.Theme_LocalBill)
+        setTheme(Theme.themeStyle())
         super.onCreate(savedInstanceState)
         parentId = intent.getLongExtra(EXTRA_PARENT, 0L)
         if (parentId > 0) {
@@ -102,8 +102,8 @@ class CategoryManageActivity : Activity() {
         }
         root.addView(listView, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
 
-        val addBtn = UiKit.text(ctx, "+ 添加分类", 16f, C.PRIMARY, bold = true, gravity = Gravity.CENTER)
-        addBtn.background = UiKit.rounded(ctx, C.PRIMARY_BG, 24)
+        val addBtn = UiKit.text(ctx, "+ 添加分类", 16f, Theme.primary(ctx), bold = true, gravity = Gravity.CENTER)
+        addBtn.background = UiKit.rounded(ctx, Theme.primaryBg(ctx), 24)
         addBtn.setPadding(0, Theme.dp(ctx, 13), 0, Theme.dp(ctx, 13))
         val addLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 50))
         addLp.setMargins(Theme.dp(ctx, 16), Theme.dp(ctx, 6), Theme.dp(ctx, 16), Theme.dp(ctx, 16))
@@ -136,7 +136,7 @@ class CategoryManageActivity : Activity() {
     private fun updateKind() {
         for (tv in kindButtons) {
             val active = tv.tag as Int == kind
-            tv.setTextColor(if (active) C.PRIMARY else Theme.subText(ctx))
+            tv.setTextColor(if (active) Theme.primary(ctx) else Theme.subText(ctx))
             tv.setTypeface(tv.typeface, if (active) Typeface.BOLD else Typeface.NORMAL)
         }
     }
@@ -263,13 +263,18 @@ class CategoryManageActivity : Activity() {
 }
 
 /** 横向色板选择器 */
-class ColorPickerView(context: Context, initial: Int) : LinearLayout(context) {
+class ColorPickerView(
+    context: Context,
+    initial: Int,
+    colors: IntArray = C.CATEGORY_COLORS,
+    private val onSelected: ((Int) -> Unit)? = null
+) : LinearLayout(context) {
 
     var selected: Int = initial
         private set
 
     private val dots = ArrayList<View>()
-    private val colors = C.CATEGORY_COLORS
+    private val colors = colors
 
     init {
         orientation = HORIZONTAL
@@ -283,6 +288,7 @@ class ColorPickerView(context: Context, initial: Int) : LinearLayout(context) {
             dot.setOnClickListener {
                 selected = color
                 updateAlpha()
+                onSelected?.invoke(color)
             }
         }
         updateAlpha()

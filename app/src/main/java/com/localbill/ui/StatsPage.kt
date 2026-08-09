@@ -23,8 +23,8 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
 
     private var monthKey = DateUtil.monthNow()
     private val tvMonth = UiKit.text(host, "", 16f, Theme.mainText(host), bold = true, gravity = Gravity.CENTER)
-    private val tvCurrent = UiKit.text(host, "本月", 12f, C.PRIMARY, bold = true, gravity = Gravity.CENTER).apply {
-        background = UiKit.rounded(host, C.PRIMARY_BG, 16)
+    private val tvCurrent = UiKit.text(host, "本月", 12f, Theme.primary(host), bold = true, gravity = Gravity.CENTER).apply {
+        background = UiKit.rounded(host, Theme.primaryBg(host), 16)
         setOnClickListener { backToCurrent() }
     }
     private val tvExpense = UiKit.text(host, "", 26f, C.EXPENSE, bold = true)

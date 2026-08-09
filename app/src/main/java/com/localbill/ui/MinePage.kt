@@ -53,7 +53,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
         })
         left.addView(tvAssets)
         card.addView(left, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
-        val btn = UiKit.text(host, "切换", 14f, C.PRIMARY, bold = true)
+        val btn = UiKit.text(host, "切换", 14f, Theme.primary(host), bold = true)
         btn.setPadding(Theme.dp(host, 12), Theme.dp(host, 8), Theme.dp(host, 12), Theme.dp(host, 8))
         btn.setOnClickListener { open(LedgerManageActivity::class.java) }
         card.addView(btn)
@@ -62,7 +62,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
         body.addView(row("分类管理", "管理账目分类与图标") { open(CategoryManageActivity::class.java) })
         body.addView(row("账户管理", "现金、银行卡、支付宝等") { open(AccountManageActivity::class.java) })
         body.addView(row("账本管理", "多账本独立记账") { open(LedgerManageActivity::class.java) })
-        body.addView(rowWithSwitch("深色主题", "切换明暗外观", { Prefs.darkMode }, { v -> toggleTheme(v) }))
+        body.addView(row("主题", "外观与主题色") { showThemeDialog() })
         body.addView(rowWithSwitch("密码锁", "进入应用需要密码", { Prefs.passwordEnabled }, { v -> togglePassword(v) }))
         body.addView(rowWithSwitch("自动记账", "微信/支付宝支付成功自动填写", { Prefs.importEnabled }, { v -> toggleImport(v) }))
         body.addView(row("无障碍服务设置", "需在系统设置中开启后才能自动识别", {
@@ -131,8 +131,44 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
         return c
     }
 
-    private fun toggleTheme(checked: Boolean) {
-        Prefs.darkMode = checked
+    private fun showThemeDialog() {
+        val box = UiKit.vertical(host).apply {
+            setPadding(Theme.dp(host, 18), Theme.dp(host, 12), Theme.dp(host, 18), Theme.dp(host, 4))
+        }
+        box.addView(UiKit.text(host, "深色模式", 15f, Theme.mainText(host)))
+        val darkSwitch = android.widget.Switch(host).apply {
+            isChecked = Prefs.darkMode
+        }
+        darkSwitch.setOnCheckedChangeListener { _, checked ->
+            Prefs.darkMode = checked
+            host.recreate()
+        }
+        box.addView(darkSwitch, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+            setMargins(0, Theme.dp(host, 4), 0, Theme.dp(host, 10))
+        })
+        box.addView(UiKit.text(host, "主题色", 15f, Theme.mainText(host)))
+        box.addView(
+            ColorPickerView(host, Theme.primary(host), themeColors) { color -> pickThemeColor(color) },
+            LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+                setMargins(0, Theme.dp(host, 6), 0, 0)
+            }
+        )
+        android.app.AlertDialog.Builder(host)
+            .setTitle("主题设置")
+            .setView(box)
+            .setPositiveButton("完成", null)
+            .show()
+    }
+
+    private val themeColors = intArrayOf(C.ANT_BLUE, C.ANT_GREEN, C.ANT_PURPLE, C.ANT_ORANGE)
+
+    private fun pickThemeColor(color: Int) {
+        Prefs.themeColor = when (color) {
+            C.ANT_GREEN -> "green"
+            C.ANT_PURPLE -> "purple"
+            C.ANT_ORANGE -> "orange"
+            else -> "blue"
+        }
         host.recreate()
     }
 
@@ -194,7 +230,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
             .setNegativeButton("取消", null)
             .create()
         dialog.show()
-        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)?.setTextColor(C.PRIMARY)
+        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)?.setTextColor(Theme.primary(host))
     }
 
     private fun showAbout() {

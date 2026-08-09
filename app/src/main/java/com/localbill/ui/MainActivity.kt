@@ -37,7 +37,7 @@ class MainActivity : Activity() {
     private lateinit var minePage: MinePage
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (Prefs.darkMode) R.style.Theme_LocalBill_Dark else R.style.Theme_LocalBill)
+        setTheme(Theme.themeStyle())
         super.onCreate(savedInstanceState)
         currentTab = savedInstanceState?.getInt(STATE_TAB, 0) ?: 0
         buildUi()
@@ -161,8 +161,8 @@ class MainActivity : Activity() {
             val iv = (v as LinearLayout).getChildAt(0) as ImageView
             val tv = v.getChildAt(1) as TextView
             val active = i == index
-            iv.setColorFilter(if (active) C.PRIMARY else Theme.lightText(this))
-            tv.setTextColor(if (active) C.PRIMARY else Theme.lightText(this))
+            iv.setColorFilter(if (active) Theme.primary(this) else Theme.lightText(this))
+            tv.setTextColor(if (active) Theme.primary(this) else Theme.lightText(this))
             tv.setTypeface(tv.typeface, if (active) Typeface.BOLD else Typeface.NORMAL)
         }
     }
@@ -196,7 +196,7 @@ class MainActivity : Activity() {
         dialog.show()
         dialog.setOnShowListener {
             val b = dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
-            b.setTextColor(C.PRIMARY)
+            b.setTextColor(Theme.primary(this))
         }
     }
 }

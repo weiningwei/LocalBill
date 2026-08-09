@@ -40,7 +40,7 @@ class BackupActivity : Activity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (com.localbill.util.Prefs.darkMode) R.style.Theme_LocalBill_Dark else R.style.Theme_LocalBill)
+        setTheme(Theme.themeStyle())
         super.onCreate(savedInstanceState)
         buildUi()
         if (intent.getIntExtra(EXTRA_MODE, 0) == MODE_RESTORE) {
@@ -64,7 +64,7 @@ class BackupActivity : Activity() {
         root.addView(topBar, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 52)))
 
         val exportCsv = bigBtn("导出账单 CSV", "将账单明细导出为 CSV 表格，可用 Excel/WPS 打开", C.ANT_BLUE) { exportCsv() }
-        val export = bigBtn("导出备份", "将全部账目数据导出为 JSON 文件保存到本地", C.PRIMARY) { exportBackup() }
+        val export = bigBtn("导出备份", "将全部账目数据导出为 JSON 文件保存到本地", Theme.primary(ctx)) { exportBackup() }
         val restore = bigBtn("恢复备份", "从之前导出的 JSON 文件恢复数据（将覆盖当前数据）", C.ANT_GREEN) { importBackup() }
 
         val tip = UiKit.text(ctx, "所有数据仅保存在本机，不经过任何网络。",

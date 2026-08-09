@@ -31,7 +31,7 @@ class LedgerManageActivity : Activity() {
     private lateinit var listView: ListView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (Prefs.darkMode) R.style.Theme_LocalBill_Dark else R.style.Theme_LocalBill)
+        setTheme(Theme.themeStyle())
         super.onCreate(savedInstanceState)
         buildUi()
         reload()
@@ -61,8 +61,8 @@ class LedgerManageActivity : Activity() {
         }
         root.addView(listView, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
 
-        val addBtn = UiKit.text(ctx, "+ 新建账本", 16f, C.PRIMARY, bold = true, gravity = Gravity.CENTER)
-        addBtn.background = UiKit.rounded(ctx, C.PRIMARY_BG, 24)
+        val addBtn = UiKit.text(ctx, "+ 新建账本", 16f, Theme.primary(ctx), bold = true, gravity = Gravity.CENTER)
+        addBtn.background = UiKit.rounded(ctx, Theme.primaryBg(ctx), 24)
         addBtn.setPadding(0, Theme.dp(ctx, 13), 0, Theme.dp(ctx, 13))
         val addLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 50))
         addLp.setMargins(Theme.dp(ctx, 16), Theme.dp(ctx, 6), Theme.dp(ctx, 16), Theme.dp(ctx, 16))
@@ -140,7 +140,7 @@ class LedgerManageActivity : Activity() {
             lp.setMargins(Theme.dp(this@LedgerManageActivity, 24), Theme.dp(this@LedgerManageActivity, 2),
                 Theme.dp(this@LedgerManageActivity, 24), Theme.dp(this@LedgerManageActivity, 2))
 
-            val dot = UiKit.circle(this@LedgerManageActivity, if (active) C.PRIMARY else Theme.lightText(this@LedgerManageActivity), 14)
+            val dot = UiKit.circle(this@LedgerManageActivity, if (active) Theme.primary(this@LedgerManageActivity) else Theme.lightText(this@LedgerManageActivity), 14)
             val dotWrap = UiKit.horizontal(this@LedgerManageActivity).apply {
                 gravity = Gravity.CENTER
                 setPadding(Theme.dp(this@LedgerManageActivity, 8), 0, Theme.dp(this@LedgerManageActivity, 12), 0)
@@ -153,7 +153,7 @@ class LedgerManageActivity : Activity() {
             center.addView(UiKit.text(this@LedgerManageActivity, ledger.name, 15f, Theme.mainText(this@LedgerManageActivity)))
             center.addView(UiKit.text(this@LedgerManageActivity,
                 if (active) "当前账本" else if (ledger.isDefault) "默认账本" else "点击切换", 12f,
-                if (active) C.PRIMARY else Theme.lightText(this@LedgerManageActivity)))
+                if (active) Theme.primary(this@LedgerManageActivity) else Theme.lightText(this@LedgerManageActivity)))
             row.addView(center, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
             return row.apply { layoutParams = lp }
         }

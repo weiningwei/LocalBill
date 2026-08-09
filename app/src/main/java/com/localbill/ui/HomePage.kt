@@ -26,8 +26,8 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
 
     private var monthKey = DateUtil.monthNow()
     private val tvMonth = UiKit.text(host, "", 18f, Theme.mainText(host), bold = true, gravity = Gravity.CENTER)
-    private val tvCurrent = UiKit.text(host, "本月", 12f, C.PRIMARY, bold = true, gravity = Gravity.CENTER).apply {
-        background = UiKit.rounded(host, C.PRIMARY_BG, 16)
+    private val tvCurrent = UiKit.text(host, "本月", 12f, Theme.primary(host), bold = true, gravity = Gravity.CENTER).apply {
+        background = UiKit.rounded(host, Theme.primaryBg(host), 16)
         setOnClickListener { backToCurrent() }
     }
     private val tvExpense = UiKit.text(host, "0.00", 36f, C.EXPENSE, bold = true)
@@ -83,7 +83,7 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
 
         // 记一笔按钮
         val recordBtn = UiKit.text(host, "＋ 记一笔", 14f, 0xFFFFFFFF.toInt(), bold = true, gravity = Gravity.CENTER)
-        recordBtn.background = UiKit.rounded(host, C.PRIMARY, 20)
+        recordBtn.background = UiKit.rounded(host, Theme.primary(host), 20)
         val recordLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 40))
         recordLp.setMargins(Theme.dp(host, 24), Theme.dp(host, 2), Theme.dp(host, 24), Theme.dp(host, 2))
         recordBtn.setOnClickListener { host.openRecord(null) }

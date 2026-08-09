@@ -33,7 +33,7 @@ class AccountManageActivity : Activity() {
     private val types = arrayOf("现金", "银行卡", "电子钱包", "信用卡", "其他")
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (com.localbill.util.Prefs.darkMode) R.style.Theme_LocalBill_Dark else R.style.Theme_LocalBill)
+        setTheme(Theme.themeStyle())
         super.onCreate(savedInstanceState)
         buildUi()
         reload()
@@ -63,8 +63,8 @@ class AccountManageActivity : Activity() {
         }
         root.addView(listView, LinearLayout.LayoutParams(MATCH_PARENT, 0, 1f))
 
-        val addBtn = UiKit.text(ctx, "+ 添加账户", 16f, C.PRIMARY, bold = true, gravity = Gravity.CENTER)
-        addBtn.background = UiKit.rounded(ctx, C.PRIMARY_BG, 24)
+        val addBtn = UiKit.text(ctx, "+ 添加账户", 16f, Theme.primary(ctx), bold = true, gravity = Gravity.CENTER)
+        addBtn.background = UiKit.rounded(ctx, Theme.primaryBg(ctx), 24)
         addBtn.setPadding(0, Theme.dp(ctx, 13), 0, Theme.dp(ctx, 13))
         val addLp = LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 50))
         addLp.setMargins(Theme.dp(ctx, 16), Theme.dp(ctx, 6), Theme.dp(ctx, 16), Theme.dp(ctx, 16))

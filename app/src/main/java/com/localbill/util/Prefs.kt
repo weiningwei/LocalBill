@@ -15,6 +15,11 @@ object Prefs {
         get() = sp.getBoolean("dark_mode", false)
         set(v) = sp.edit().putBoolean("dark_mode", v).apply()
 
+    /** 主题色：blue / green / purple / orange */
+    var themeColor: String
+        get() = sp.getString("theme_color", "blue").orEmpty()
+        set(v) = sp.edit().putString("theme_color", v).apply()
+
     var activeLedgerId: Long
         get() = sp.getLong("active_ledger", 1)
         set(v) = sp.edit().putLong("active_ledger", v).apply()

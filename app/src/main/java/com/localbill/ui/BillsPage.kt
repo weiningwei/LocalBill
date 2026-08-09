@@ -58,8 +58,8 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
         seg.addView(segButton("按年", 2), segParams())
         segWrap.addView(seg, LinearLayout.LayoutParams(0, Theme.dp(host, 38), 1f))
 
-        tvCurrent = UiKit.text(host, "本月", 13f, C.PRIMARY, bold = true, gravity = Gravity.CENTER)
-        tvCurrent.background = UiKit.rounded(host, C.PRIMARY_BG, 19)
+        tvCurrent = UiKit.text(host, "本月", 13f, Theme.primary(host), bold = true, gravity = Gravity.CENTER)
+        tvCurrent.background = UiKit.rounded(host, Theme.primaryBg(host), 19)
         tvCurrent.layoutParams = LinearLayout.LayoutParams(Theme.dp(host, 56), Theme.dp(host, 38))
         tvCurrent.setOnClickListener { backToCurrent() }
 
@@ -146,7 +146,7 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
     private fun updateSeg() {
         for (tv in segButtons) {
             val active = tv.tag as Int == mode
-            tv.background = if (active) UiKit.rounded(host, C.PRIMARY, 18) else null
+            tv.background = if (active) UiKit.rounded(host, Theme.primary(host), 18) else null
             tv.setTextColor(if (active) 0xFFFFFFFF.toInt() else Theme.subText(host))
             tv.setTypeface(tv.typeface, if (active) Typeface.BOLD else Typeface.NORMAL)
         }

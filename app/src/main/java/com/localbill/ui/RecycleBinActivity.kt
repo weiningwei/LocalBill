@@ -32,7 +32,7 @@ class RecycleBinActivity : Activity() {
     private lateinit var emptyView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(if (com.localbill.util.Prefs.darkMode) R.style.Theme_LocalBill_Dark else R.style.Theme_LocalBill)
+        setTheme(Theme.themeStyle())
         super.onCreate(savedInstanceState)
         buildUi()
         reload()
@@ -131,7 +131,7 @@ class RecycleBinActivity : Activity() {
                 setPadding(Theme.dp(this@RecycleBinActivity, 8), Theme.dp(this@RecycleBinActivity, 4),
                     Theme.dp(this@RecycleBinActivity, 8), Theme.dp(this@RecycleBinActivity, 6))
             }
-            val restore = UiKit.text(this@RecycleBinActivity, "恢复", 14f, C.PRIMARY, bold = true)
+            val restore = UiKit.text(this@RecycleBinActivity, "恢复", 14f, Theme.primary(this@RecycleBinActivity), bold = true)
             restore.setPadding(Theme.dp(this@RecycleBinActivity, 14), Theme.dp(this@RecycleBinActivity, 6),
                 Theme.dp(this@RecycleBinActivity, 14), Theme.dp(this@RecycleBinActivity, 6))
             restore.setOnClickListener {
