@@ -27,3 +27,32 @@ replay_pid*
 .kotlin/
 .gradle/
 .idea/
+.fleet/
+
+# Gradle build outputs
+build/
+
+# Local machine settings (SDK path, etc.)
+local.properties
+
+# IDE
+*.iml
+
+# Android Studio run/capture output
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Signing / secrets (never commit)
+*.keystore
+*.jks
+secrets.properties
+keystore.properties
+
+# Profiling / crash dumps
+*.hprof
+
+# OS junk
+.DS_Store
+Thumbs.db
+Desktop.ini
