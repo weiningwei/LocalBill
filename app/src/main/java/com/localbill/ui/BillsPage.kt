@@ -65,7 +65,7 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
         navRow.addView(navArrow(-1))
         navRow.addView(tvNav, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         navRow.addView(navArrow(1))
-        addView(navRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 42)))
+        addView(navRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(host, 52)))
 
         // 统计卡片：surface 配色，对比清晰但不突兀
         val card = UiKit.vertical(host).apply {
@@ -136,11 +136,12 @@ class BillsPage(private val host: MainActivity) : LinearLayout(host) {
     private fun navArrow(dir: Int): View {
         val btn = TextView(host).apply {
             text = if (dir < 0) "‹" else "›"
-            textSize = 24f
+            textSize = 28f
             setTextColor(Theme.subText(host))
             gravity = Gravity.CENTER
+            background = UiKit.rounded(host, Theme.surface(host), 22)
         }
-        btn.layoutParams = LinearLayout.LayoutParams(Theme.dp(host, 40), Theme.dp(host, 40))
+        btn.layoutParams = LinearLayout.LayoutParams(Theme.dp(host, 48), Theme.dp(host, 48))
         btn.setOnClickListener {
             when (mode) {
                 0 -> day = DateUtil.addDays(day, dir)
