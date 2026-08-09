@@ -4,25 +4,49 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- 主题蓝渐变背景（左上浅 → 右下深） -->
     <path
-        android:pathData="M54,34 L54,74"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="8"
+        android:pathData="M0,0 H108 V108 H0 Z"
+        android:fillColor="#1890FF" />
+    <!-- 右下角装饰弧线 -->
+    <path
+        android:pathData="M78,108 A42,42 0 0,0 108,78"
+        android:strokeColor="#40FFFFFF"
+        android:strokeWidth="10"
         android:strokeLineCap="round" />
+    <!-- 左上角装饰弧线 -->
     <path
-        android:pathData="M36,32 L54,50 L72,32"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="8"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round" />
-    <path
-        android:pathData="M40,58 L68,58"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="8"
+        android:pathData="M30,0 A42,42 0 0,0 0,30"
+        android:strokeColor="#40FFFFFF"
+        android:strokeWidth="10"
         android:strokeLineCap="round" />
+
+    <!-- 白色账本（圆角卡片，居中） -->
     <path
-        android:pathData="M40,68 L68,68"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="8"
+        android:pathData="M34,26 H74 Q80,26 80,32 V76 Q80,82 74,82 H34 Q28,82 28,76 V32 Q28,26 34,26 Z"
+        android:fillColor="#FFFFFF" />
+    <!-- 账本标题行 -->
+    <path
+        android:pathData="M40,38 H68"
+        android:strokeColor="#1890FF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <!-- 记账行 1 -->
+    <path
+        android:pathData="M40,50 H64"
+        android:strokeColor="#1890FF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <!-- 记账行 2 -->
+    <path
+        android:pathData="M40,60 H60"
+        android:strokeColor="#1890FF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+    <!-- 记账行 3 -->
+    <path
+        android:pathData="M40,70 H66"
+        android:strokeColor="#1890FF"
+        android:strokeWidth="5"
         android:strokeLineCap="round" />
 </vector>

@@ -4,7 +4,20 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- 主题蓝渐变背景（左上浅 → 右下深） -->
     <path
         android:pathData="M0,0 H108 V108 H0 Z"
         android:fillColor="#1890FF" />
+    <!-- 右下角装饰弧线 -->
+    <path
+        android:pathData="M78,108 A42,42 0 0,0 108,78"
+        android:strokeColor="#40FFFFFF"
+        android:strokeWidth="10"
+        android:strokeLineCap="round" />
+    <!-- 左上角装饰弧线 -->
+    <path
+        android:pathData="M30,0 A42,42 0 0,0 0,30"
+        android:strokeColor="#40FFFFFF"
+        android:strokeWidth="10"
+        android:strokeLineCap="round" />
 </vector>
