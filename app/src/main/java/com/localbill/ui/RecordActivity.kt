@@ -49,6 +49,7 @@ class RecordActivity : Activity() {
     private lateinit var tvDate: TextView
     private lateinit var tvTime: TextView
     private lateinit var etRemark: EditText
+    private lateinit var keypadBox: LinearLayout
 
     private var topCats: List<Category> = emptyList()
     private var subCats: List<Category> = emptyList()
@@ -224,6 +225,7 @@ class RecordActivity : Activity() {
         root.addView(remarkRow, remarkLp)
 
         // 键盘
+        val keypadBox = UiKit.vertical(ctx)
         val keys = listOf(
             listOf("7", "8", "9", "⌫"),
             listOf("4", "5", "6", "."),
@@ -232,7 +234,7 @@ class RecordActivity : Activity() {
         for (rowKeys in keys) {
             val row = UiKit.horizontal(ctx)
             rowKeys.forEach { k -> row.addView(keyButton(k), keyParams()) }
-            root.addView(row, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 50)))
+            keypadBox.addView(row, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 50)))
         }
         val lastRow = UiKit.horizontal(ctx)
         lastRow.addView(keyButton("0"), keyParams())
@@ -241,7 +243,25 @@ class RecordActivity : Activity() {
         saveBtn.setPadding(0, Theme.dp(ctx, 12), 0, Theme.dp(ctx, 12))
         saveBtn.setOnClickListener { saveBill() }
         lastRow.addView(saveBtn, LinearLayout.LayoutParams(0, MATCH_PARENT, 3f))
-        root.addView(lastRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 52)))
+        keypadBox.addView(lastRow, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 52)))
+        root.addView(keypadBox)
+        this.keypadBox = keypadBox
+
+        // 备注聚焦时隐藏数字键盘，交由系统软键盘输入；失焦后恢复
+        etRemark.setOnFocusChangeListener { _, hasFocus ->
+            keypadBox.visibility = if (hasFocus) View.GONE else View.VISIBLE
+        }
+
+        // Android 15+ 不再由 adjustResize 自动压缩窗口，需手动处理 IME insets，
+        // 否则系统软键盘会直接遮挡底部备注输入框
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            root.setOnApplyWindowInsetsListener { v, insets ->
+                val ime = insets.getInsets(android.view.WindowInsets.Type.ime())
+                v.setPadding(0, 0, 0,
+                    if (keypadBox.visibility == View.GONE) ime.bottom else 0)
+                insets
+            }
+        }
 
         setContentView(root)
         updateAmountText()
@@ -326,7 +346,15 @@ class RecordActivity : Activity() {
         when (key) {
             "⌫" -> {
                 if (start == end) {
-                    if (start > 0) et.text.delete(start - 1, start)
+                    if (start > 0) {
+                        // 按完整代码点删除，避免代理对（emoji/生僻汉字）被删半截
+                        var toDelete = start - 1
+                        if (Character.isLowSurrogate(et.text[toDelete]) &&
+                            toDelete > 0 && Character.isHighSurrogate(et.text[toDelete - 1])) {
+                            toDelete -= 1
+                        }
+                        et.text.delete(toDelete, start)
+                    }
                 } else {
                     et.text.delete(start, end)
                 }
