@@ -145,6 +145,8 @@ class RecordActivity : Activity() {
         amountWrap.addView(UiKit.text(ctx, "¥", 30f, Theme.mainText(ctx), bold = true))
         tvAmount = UiKit.text(ctx, "0.00", 36f, Theme.mainText(ctx), bold = true)
         amountWrap.addView(tvAmount)
+        // 点击金额区域时，让键盘重新作用于金额
+        amountWrap.setOnClickListener { clearRemarkFocus() }
         root.addView(amountWrap, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 62)))
 
         // 分类网格
@@ -254,6 +256,7 @@ class RecordActivity : Activity() {
         tv.tag = k
         tv.setOnClickListener {
             kind = k
+            clearRemarkFocus()
             updateKind()
             loadCategories()
         }
@@ -281,6 +284,11 @@ class RecordActivity : Activity() {
     }
 
     private fun onKey(key: String) {
+        // 备注获得焦点时，键盘输入应作用于备注而不是金额
+        if (::etRemark.isInitialized && etRemark.hasFocus()) {
+            onRemarkKey(key)
+            return
+        }
         when (key) {
             "⌫" -> {
                 if (amountStr.isNotEmpty()) amountStr = amountStr.dropLast(1)
@@ -308,6 +316,30 @@ class RecordActivity : Activity() {
     private fun updateAmountText() {
         val cents = Money.parseToCents(amountStr)
         tvAmount.text = if (cents == null) (if (amountStr.isEmpty()) "0.00" else amountStr) else Money.format(cents)
+    }
+
+    /** 数字键盘作用于备注输入框时的按键处理 */
+    private fun onRemarkKey(key: String) {
+        val et = etRemark
+        val start = et.selectionStart.coerceAtLeast(0)
+        val end = et.selectionEnd.coerceAtLeast(start)
+        when (key) {
+            "⌫" -> {
+                if (start == end) {
+                    if (start > 0) et.text.delete(start - 1, start)
+                } else {
+                    et.text.delete(start, end)
+                }
+            }
+            else -> {
+                et.text.replace(start, end, key)
+            }
+        }
+    }
+
+    /** 让数字键盘重新作用于金额输入 */
+    private fun clearRemarkFocus() {
+        if (::etRemark.isInitialized && etRemark.hasFocus()) etRemark.clearFocus()
     }
 
     private fun updateKind() {
@@ -552,6 +584,7 @@ class RecordActivity : Activity() {
                 topMargin = Theme.dp(this@RecordActivity, 3)
             })
             box.setOnClickListener {
+                clearRemarkFocus()
                 if (isTop) {
                     selectedTop = cat
                     selectedSub = null
