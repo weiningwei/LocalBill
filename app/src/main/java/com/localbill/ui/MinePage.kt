@@ -64,6 +64,10 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
         body.addView(row("账本管理", "多账本独立记账") { open(LedgerManageActivity::class.java) })
         body.addView(rowWithSwitch("深色主题", "切换明暗外观", { Prefs.darkMode }, { v -> toggleTheme(v) }))
         body.addView(rowWithSwitch("密码锁", "进入应用需要密码", { Prefs.passwordEnabled }, { v -> togglePassword(v) }))
+        body.addView(rowWithSwitch("自动记账", "微信/支付宝支付成功自动填写", { Prefs.importEnabled }, { v -> toggleImport(v) }))
+        body.addView(row("无障碍服务设置", "需在系统设置中开启后才能自动识别", {
+            host.startActivity(Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }))
         body.addView(row("备份数据", "导出 JSON 到本地文件") { open(BackupActivity::class.java) })
         body.addView(row("恢复数据", "从 JSON 文件导入") { openRestore() })
         body.addView(row("回收站", "已删除的记录") { open(RecycleBinActivity::class.java) })
@@ -146,6 +150,18 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
                 .setPositiveButton("关闭") { _, _ -> Prefs.passwordEnabled = false; host.recreate() }
                 .setNegativeButton("取消", null)
                 .show()
+        }
+    }
+
+    private fun toggleImport(checked: Boolean) {
+        if (checked) {
+            Prefs.importEnabled = true
+            Toast.makeText(host, "请到系统设置中开启「本地账」的无障碍服务", Toast.LENGTH_LONG).show()
+            host.startActivity(Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        } else {
+            Prefs.importEnabled = false
+            Prefs.lastImportSignature = ""
+            Prefs.lastImportAtMillis = 0
         }
     }
 

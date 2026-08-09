@@ -35,6 +35,7 @@
     <string name="mine_recycle">回收站</string>
     <string name="mine_about">关于</string>
     <string name="about_text">本地账 LocalBill\n一个完全离线、数据只存本地的记账应用。</string>
+    <string name="accessibility_service_desc">识别微信/支付宝支付成功页面，自动记一笔支出。</string>
 
     <string name="btn_save">保存</string>
     <string name="btn_cancel">取消</string>

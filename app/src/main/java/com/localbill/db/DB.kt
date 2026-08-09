@@ -271,6 +271,14 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 2)
         return out
     }
 
+    /** 按名称查一级分类（parent=0），用于自动记账按商家匹配分类 */
+    fun categoryByName(name: String, kind: Int): Category? {
+        db.query("category", null, "name=? AND kind=? AND parent=0",
+            arrayOf(name, kind.toString()), null, null, "sort ASC").use { c ->
+            return if (c.moveToFirst()) cursorCategory(c) else null
+        }
+    }
+
     fun subCategories(parentId: Long): List<Category> {
         val out = ArrayList<Category>()
         db.query("category", null, "parent=?", arrayOf(parentId.toString()), null, null, "sort ASC").use { c ->

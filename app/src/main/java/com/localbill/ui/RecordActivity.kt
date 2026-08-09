@@ -37,6 +37,11 @@ class RecordActivity : Activity() {
 
     companion object {
         const val EXTRA_ID = "bill_id"
+        const val EXTRA_AMOUNT_CENTS = "amount_cents" // Long
+        const val EXTRA_REMARK = "remark"             // String（商家名）
+        const val EXTRA_DAY = "day"                   // Int YYYYMMDD（可选）
+        const val EXTRA_TIME = "time"                 // Int 当日秒数（可选）
+        const val EXTRA_CATEGORY = "category"         // String 一级分类名（可选）
     }
 
     private var editId: Long = -1
@@ -97,6 +102,20 @@ class RecordActivity : Activity() {
                 amountStr = Money.format(bill.amount).replace(",", "")
                 etRemark = EditText(ctx)
                 etRemark.setText(bill.remark)
+            }
+        } else if (intent.hasExtra(EXTRA_AMOUNT_CENTS)) {
+            // 自动记账预填：金额/备注/日期时间/分类
+            val cents = intent.getLongExtra(EXTRA_AMOUNT_CENTS, 0L)
+            if (cents > 0) amountStr = Money.format(cents).replace(",", "")
+            if (intent.hasExtra(EXTRA_DAY)) day = intent.getIntExtra(EXTRA_DAY, day)
+            if (intent.hasExtra(EXTRA_TIME)) time = intent.getIntExtra(EXTRA_TIME, time)
+            val remark = intent.getStringExtra(EXTRA_REMARK).orEmpty()
+            etRemark = EditText(ctx)
+            etRemark.setText(remark)
+            val catName = intent.getStringExtra(EXTRA_CATEGORY)
+            if (!catName.isNullOrEmpty()) {
+                selectedTop = App.db.categoryByName(catName, Kinds.EXPENSE)
+                selectedSub = null
             }
         }
         if (selectedAccount == null) selectedAccount = accounts.firstOrNull()
