@@ -23,6 +23,14 @@ jobs:
 
       # runner 镜像已预装 Android SDK（含 android-37.0 / build-tools 37），无需安装
 
+      - name: 查看预装 Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "--- platforms ---"
+          ls $ANDROID_HOME/platforms
+          echo "--- build-tools ---"
+          ls $ANDROID_HOME/build-tools
+
       - name: 编译 APK（debug + release）
         run: ./gradlew assembleDebug assembleRelease
 
