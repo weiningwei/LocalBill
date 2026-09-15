@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 停车（P字牌） -->
+    <path
+        android:pathData="M5.5,4.5 H18.5 A1.8,1.8 0 0,1 20.3,6.3 V17.7 A1.8,1.8 0 0,1 18.5,19.5 H5.5 A1.8,1.8 0 0,1 3.7,17.7 V6.3 A1.8,1.8 0 0,1 5.5,4.5 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M9.5,16.5 V7.5 H13.2 A2.6,2.6 0 0,1 13.2,12.7 H9.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

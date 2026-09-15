@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 宠物（爪印） -->
+    <path
+        android:pathData="M12,13.5 C9.6,13.5 8,15.3 8,16.9 C8,18.7 9.6,19.9 12,19.9 C14.4,19.9 16,18.7 16,16.9 C16,15.3 14.4,13.5 12,13.5 Z"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M6.35,10.8 A1.25,1.25 0 1,0 8.85,10.8 A1.25,1.25 0 1,0 6.35,10.8"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M9.35,9 A1.25,1.25 0 1,0 11.85,9 A1.25,1.25 0 1,0 9.35,9"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M12.15,9 A1.25,1.25 0 1,0 14.65,9 A1.25,1.25 0 1,0 12.15,9"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M15.149999999999999,10.8 A1.25,1.25 0 1,0 17.65,10.8 A1.25,1.25 0 1,0 15.149999999999999,10.8"
+        android:fillColor="#FFFFFF" />
+</vector>

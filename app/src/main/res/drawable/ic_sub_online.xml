@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 网课（显示器） -->
+    <path
+        android:pathData="M3.5,5 H20.5 V15.5 H3.5 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M10.3,7.8 L14.8,10.2 L10.3,12.7 Z"
+        android:fillColor="#FFFFFF" />
+    <path
+        android:pathData="M12,15.5 V18 M8.5,18.5 H15.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

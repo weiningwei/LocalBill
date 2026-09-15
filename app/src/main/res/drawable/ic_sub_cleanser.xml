@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 洗面奶（按压瓶） -->
+    <path
+        android:pathData="M9,10 H15 A1,1 0 0,1 16,11 V19 A1.5,1.5 0 0,1 14.5,20.5 H9.5 A1.5,1.5 0 0,1 8,19 V11 A1,1 0 0,1 9,10 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M9.8,6 H14.8 M12.3,6 V10 M14.8,6 V7.8"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M8,14.5 H16"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
