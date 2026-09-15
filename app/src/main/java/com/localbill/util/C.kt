@@ -26,6 +26,7 @@ object C {
     const val PINK_PRIMARY = 0xFFFF85C0.toInt()
     const val INDIGO_PRIMARY = 0xFF2F54EB.toInt()
     const val LIME_PRIMARY = 0xFFA0D911.toInt()
+    const val SAGE_PRIMARY = 0xFF7BA05B.toInt()
 
     const val TEXT_MAIN = 0xFF314659.toInt()
     const val TEXT_SUB = 0xFF697B8C.toInt()
@@ -51,6 +52,6 @@ object C {
     /** 内置主题色（默认色板） */
     val THEME_COLORS = intArrayOf(
         ANT_BLUE, ANT_GREEN, ANT_PURPLE, ANT_ORANGE,
-        CYAN_PRIMARY, PINK_PRIMARY, INDIGO_PRIMARY, LIME_PRIMARY
+        CYAN_PRIMARY, PINK_PRIMARY, INDIGO_PRIMARY, LIME_PRIMARY, SAGE_PRIMARY
     )
 }

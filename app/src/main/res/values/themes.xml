@@ -163,4 +163,20 @@
         <item name="primaryLight">@color/lime_primary_light</item>
         <item name="primaryBg">@color/lime_primary_bg_dark</item>
     </style>
+
+    <!-- 鼠尾草绿主题（小清新） -->
+    <style name="Theme.LocalBill.Sage.Light" parent="Theme.LocalBill">
+        <item name="android:colorAccent">@color/sage_primary</item>
+        <item name="primaryColor">@color/sage_primary</item>
+        <item name="primaryDark">@color/sage_primary_dark</item>
+        <item name="primaryLight">@color/sage_primary_light</item>
+        <item name="primaryBg">@color/sage_primary_bg</item>
+    </style>
+    <style name="Theme.LocalBill.Sage.Dark" parent="Theme.LocalBill.Dark">
+        <item name="android:colorAccent">@color/sage_primary</item>
+        <item name="primaryColor">@color/sage_primary</item>
+        <item name="primaryDark">@color/sage_primary_dark</item>
+        <item name="primaryLight">@color/sage_primary_light</item>
+        <item name="primaryBg">@color/sage_primary_bg_dark</item>
+    </style>
 </resources>

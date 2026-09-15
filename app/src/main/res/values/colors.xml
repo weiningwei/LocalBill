@@ -56,6 +56,13 @@
     <color name="lime_primary_bg">#FCFFE6</color>
     <color name="lime_primary_bg_dark">#22270F</color>
 
+    <!-- 品牌主色：鼠尾草绿（小清新，参考有钱记账） -->
+    <color name="sage_primary">#7BA05B</color>
+    <color name="sage_primary_dark">#567040</color>
+    <color name="sage_primary_light">#B0C69D</color>
+    <color name="sage_primary_bg">#F2F5EF</color>
+    <color name="sage_primary_bg_dark">#161B10</color>
+
     <!-- 明色主题 -->
     <color name="bg">#F5F5F5</color>
     <color name="card">#FFFFFF</color>

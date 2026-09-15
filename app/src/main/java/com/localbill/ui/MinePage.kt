@@ -186,7 +186,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
         val wrap = pickerWrap ?: return
         wrap.removeAllViews()
         val colors = intArrayOf(*C.THEME_COLORS, *Prefs.customThemeColors.toIntArray())
-        val names = listOf("蓝色", "绿色", "紫色", "橙色", "青色", "粉色", "靛蓝", "柠檬") +
+        val names = listOf("蓝色", "绿色", "紫色", "橙色", "青色", "粉色", "靛蓝", "柠檬", "鼠尾草") +
             Prefs.customThemeColors.mapIndexed { i, c ->
                 Prefs.customThemeColorNames.getOrElse(i) { "" }.ifBlank { hex(c) }
             }
@@ -220,6 +220,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
             C.PINK_PRIMARY -> Prefs.themeColor = "pink"
             C.INDIGO_PRIMARY -> Prefs.themeColor = "indigo"
             C.LIME_PRIMARY -> Prefs.themeColor = "lime"
+            C.SAGE_PRIMARY -> Prefs.themeColor = "sage"
             else -> {
                 Prefs.customThemeColor = color
                 Prefs.themeColor = "custom"
@@ -273,6 +274,7 @@ class MinePage(private val host: MainActivity) : LinearLayout(host) {
         C.PINK_PRIMARY -> "粉色"
         C.INDIGO_PRIMARY -> "靛蓝"
         C.LIME_PRIMARY -> "柠檬"
+        C.SAGE_PRIMARY -> "鼠尾草"
         else -> "自定义 #${hex(color)}"
     }
 

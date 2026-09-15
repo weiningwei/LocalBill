@@ -20,6 +20,7 @@ object Theme {
         "pink" -> if (isDark) R.style.Theme_LocalBill_Pink_Dark else R.style.Theme_LocalBill_Pink_Light
         "indigo" -> if (isDark) R.style.Theme_LocalBill_Indigo_Dark else R.style.Theme_LocalBill_Indigo_Light
         "lime" -> if (isDark) R.style.Theme_LocalBill_Lime_Dark else R.style.Theme_LocalBill_Lime_Light
+        "sage" -> if (isDark) R.style.Theme_LocalBill_Sage_Dark else R.style.Theme_LocalBill_Sage_Light
         else -> if (isDark) R.style.Theme_LocalBill_Blue_Dark else R.style.Theme_LocalBill_Blue_Light
     }
 
