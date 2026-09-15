@@ -1,6 +1,7 @@
 package com.localbill.util
 
 import android.content.Context
+import android.graphics.Color
 import com.localbill.R
 
 object Theme {
@@ -73,6 +74,23 @@ object Theme {
 
     /** 向黑色混色，得到更深的颜色 */
     private fun shade(color: Int, blackRatio: Float): Int = mix(color, 0x000000, blackRatio)
+
+    /**
+     * 主题色系色板：固定色相（跟随主题色）+ 由亮到暗的明度阶梯（越深越饱和）派生的一组变体。
+     * 用于「需要多色区分、但整体观感仍要统一在主题色系内」的场景（如分类配色）。
+     * 索引 0 最亮最淡，索引越大越深越浓；不同主题色下阶梯结构一致，观感统一。
+     */
+    fun palette(ctx: Context, count: Int = 8): IntArray {
+        val hsv = FloatArray(3)
+        Color.colorToHSV(primary(ctx), hsv)
+        val hue = hsv[0]
+        val sat = hsv[1]
+        return IntArray(count) { i ->
+            val t = if (count <= 1) 0f else i / (count - 1).toFloat()
+            val s = (sat * (0.80f + 0.30f * t)).coerceIn(0.35f, 1f)
+            Color.HSVToColor(floatArrayOf(hue, s, 0.95f - 0.55f * t))
+        }
+    }
 
     fun dp(ctx: Context, value: Int): Int {
         return (value * ctx.resources.displayMetrics.density + 0.5f).toInt()

@@ -147,6 +147,30 @@ class CategoryManageActivity : Activity() {
         listView.adapter = CatListAdapter()
     }
 
+    /**
+     * 分类配色区块：色板统一为主题色系的深浅变体。
+     * 图标底色已统一跟随主题色，此处颜色仅用于统计图表的扇区/排行区分。
+     */
+    private fun colorBlock(box: LinearLayout, initial: Int): ColorPickerView {
+        val palette = Theme.palette(ctx)
+        val picker = ColorPickerView(
+            ctx,
+            if (palette.contains(initial)) initial else palette[(palette.size - 1) / 2],
+            palette,
+            columns = 4
+        )
+        box.addView(UiKit.text(ctx, "统计图表颜色", 13f, Theme.subText(ctx)).apply {
+            setPadding(0, Theme.dp(ctx, 12), 0, 0)
+        })
+        box.addView(picker, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+            topMargin = Theme.dp(ctx, 6)
+        })
+        box.addView(UiKit.text(ctx, "图标底色统一跟随主题色，此处颜色仅供统计图表区分", 11f, Theme.lightText(ctx)).apply {
+            setPadding(0, Theme.dp(ctx, 6), 0, 0)
+        })
+        return picker
+    }
+
     private fun addDialog() {
         val name = EditText(ctx).apply {
             setTextSize(14f)
@@ -154,12 +178,10 @@ class CategoryManageActivity : Activity() {
             setTextColor(Theme.mainText(ctx))
             setHintTextColor(Theme.lightText(ctx))
         }
-        val picker = ColorPickerView(ctx, C.CATEGORY_COLORS[items.size % C.CATEGORY_COLORS.size])
+        val palette = Theme.palette(ctx)
         val box = UiKit.vertical(ctx)
         box.addView(name)
-        box.addView(picker, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 40)).apply {
-            topMargin = Theme.dp(ctx, 10)
-        })
+        val picker = colorBlock(box, palette[items.size % palette.size])
         val dialog = android.app.AlertDialog.Builder(ctx)
             .setTitle("添加分类")
             .setView(box)
@@ -183,12 +205,9 @@ class CategoryManageActivity : Activity() {
             setText(cat.name)
             setTextColor(Theme.mainText(ctx))
         }
-        val picker = ColorPickerView(ctx, cat.color)
         val box = UiKit.vertical(ctx)
         box.addView(name)
-        box.addView(picker, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 40)).apply {
-            topMargin = Theme.dp(ctx, 10)
-        })
+        val picker = colorBlock(box, cat.color)
         val dialog = android.app.AlertDialog.Builder(ctx)
             .setTitle("编辑分类")
             .setView(box)
@@ -286,6 +305,7 @@ class ColorPickerView(
         val colCount = columns.coerceAtLeast(1)
         val hasNames = names != null
         val itemW = Theme.dp(context, if (hasNames) 44 else 26)
+        val dotSize = Theme.dp(context, 26)
 
         for (rowIndices in colors.indices.chunked(colCount)) {
             val row = LinearLayout(context).apply {
@@ -316,12 +336,13 @@ class ColorPickerView(
                 } else {
                     item = dot
                 }
-                val lp = LayoutParams(itemW, WRAP_CONTENT)
+                // 无名称时高度必须给定，否则 WRAP_CONTENT 会被父容器撑满（圆点被拉成椭圆）
+                val lp = LayoutParams(itemW, if (hasNames) WRAP_CONTENT else dotSize)
                 lp.setMargins(Theme.dp(context, 6), Theme.dp(context, 4), Theme.dp(context, 6), Theme.dp(context, 4))
                 row.addView(item, lp)
                 item.setOnClickListener {
                     selected = color
-                    updateAlpha()
+                    updateSelection()
                     onSelected?.invoke(color)
                 }
                 item.setOnLongClickListener {
@@ -331,13 +352,13 @@ class ColorPickerView(
             }
             addView(row, LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         }
-        updateAlpha()
+        updateSelection()
     }
 
-    private fun updateAlpha() {
+    /** 选中态只用描边标记：色板是同一色系的深浅变体，靠透明度淡化会看不出彼此差异 */
+    private fun updateSelection() {
         for ((i, dot) in dots.withIndex()) {
             val isSel = colors[i] == selected
-            dot.alpha = if (isSel) 1f else 0.3f
             val d = dot.background as? GradientDrawable
             d?.setStroke(
                 if (isSel) Theme.dp(context, 2) else 0,
