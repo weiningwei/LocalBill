@@ -22,7 +22,6 @@ import com.localbill.model.Account
 import com.localbill.model.Category
 import com.localbill.model.Kinds
 import com.localbill.util.C
-import com.localbill.util.CatIcon
 import com.localbill.util.DateUtil
 import com.localbill.util.Money
 import com.localbill.util.Prefs
@@ -458,22 +457,18 @@ class RecordActivity : Activity() {
         } else {
             selectedSub?.id == cat.id
         }
+        val primary = Theme.primary(ctx)
         val box = UiKit.vertical(ctx).apply {
             gravity = Gravity.CENTER
             setPadding(Theme.dp(ctx, 2), Theme.dp(ctx, 4), Theme.dp(ctx, 2), Theme.dp(ctx, 4))
-            background = UiKit.rounded(ctx, if (selected) lightTint(cat.color) else 0x00000000, 10)
+            background = UiKit.rounded(ctx, if (selected) lightTint(primary) else 0x00000000, 10)
         }
-        val circle = UiKit.horizontal(ctx).apply {
-            gravity = Gravity.CENTER
-            background = UiKit.rounded(ctx, cat.color, 20)
-        }
-        circle.addView(
-            ImageView(ctx).apply { setImageResource(CatIcon.of(cat)) },
-            LinearLayout.LayoutParams(Theme.dp(ctx, 24), Theme.dp(ctx, 24))
-        )
-        box.addView(circle, LinearLayout.LayoutParams(Theme.dp(ctx, 40), Theme.dp(ctx, 40)))
         box.addView(
-            UiKit.text(ctx, cat.name, 12f, if (selected) cat.color else Theme.mainText(ctx)),
+            UiKit.catIcon(ctx, cat, 40),
+            LinearLayout.LayoutParams(Theme.dp(ctx, 40), Theme.dp(ctx, 40))
+        )
+        box.addView(
+            UiKit.text(ctx, cat.name, 12f, if (selected) primary else Theme.mainText(ctx)),
             LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
                 topMargin = Theme.dp(ctx, 3)
             }

@@ -60,12 +60,12 @@ object UiKit {
         return dot
     }
 
-    /** 彩色圆 + 分类图标 */
+    /** 主题色圆 + 分类图标（底色统一跟随所选主题色，不使用分类自身颜色） */
     fun catIcon(ctx: Context, cat: Category?, sizeDp: Int): View {
         val wrap = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
-            background = circleBg(ctx, cat?.color ?: C.ANT_GRAY, sizeDp)
+            background = circleBg(ctx, Theme.primary(ctx), sizeDp)
         }
         if (cat != null) {
             val iv = ImageView(ctx).apply {
