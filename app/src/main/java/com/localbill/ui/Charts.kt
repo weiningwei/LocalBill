@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.view.View
+import com.localbill.util.Theme
 import kotlin.math.max
 import kotlin.math.min
 
@@ -22,7 +23,7 @@ class PieChartView(context: Context) : View(context) {
         super.onDraw(canvas)
         val total = slices.sumOf { it.value.toDouble() }.toFloat()
         if (total <= 0f || slices.isEmpty()) {
-            paint.color = 0xFFF0F0F0.toInt()
+            paint.color = Theme.divider(context)
             canvas.drawCircle(width / 2f, height / 2f, min(width, height) / 2f - 4, paint)
             return
         }
@@ -39,15 +40,15 @@ class PieChartView(context: Context) : View(context) {
             canvas.drawArc(rect, start, sweep, true, paint)
             start += sweep
         }
-        // 中心挖空
-        paint.color = 0xFFFFFFFF.toInt()
+        // 中心挖空（透出页面背景）
+        paint.color = Theme.pageBg(context)
         val hole = w * 0.5f
         canvas.drawCircle(width / 2f, height / 2f, hole / 2f, paint)
 
         // 中心文字
         paint.textAlign = Paint.Align.CENTER
         paint.textSize = w * 0.13f
-        paint.color = 0xFF314659.toInt()
+        paint.color = Theme.mainText(context)
         canvas.drawText(String.format("%.0f%%", 100f), width / 2f, height / 2f + paint.textSize / 3f, paint)
     }
 }
@@ -80,7 +81,7 @@ class BarChartView(context: Context) : View(context) {
         // 网格线
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1f
-        paint.color = 0xFFE8E8E8.toInt()
+        paint.color = Theme.divider(context)
         canvas.drawLine(pad, topPad, width - pad, topPad + chartH, paint)
         canvas.drawLine(pad, topPad + chartH, width - pad, topPad + chartH, paint)
 
@@ -97,7 +98,7 @@ class BarChartView(context: Context) : View(context) {
 
             paint.textAlign = Paint.Align.CENTER
             paint.textSize = 11f
-            paint.color = 0xFF697B8C.toInt()
+            paint.color = Theme.subText(context)
             canvas.drawText(bar.label, cx, height - 6f, paint)
         }
     }

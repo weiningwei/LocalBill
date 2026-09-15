@@ -168,6 +168,7 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
         }
 
         // 趋势
+        barChart.barColor = Theme.primary(host)
         val series = App.db.monthlySeries(ledger.id, Kinds.EXPENSE, 12)
         barChart.bars = series.map { (mk, amt) ->
             BarChartView.Bar("${DateUtil.monthIdx(mk)}月", amt.toFloat())

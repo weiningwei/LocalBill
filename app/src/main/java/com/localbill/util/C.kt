@@ -20,6 +20,12 @@ object C {
     const val EXPENSE = 0xFFF5222D.toInt()
     const val INCOME = 0xFF52C41A.toInt()
 
+    // 小清新主题色（与 colors.xml 对应）
+    const val CYAN_PRIMARY = 0xFF13C2C2.toInt()
+    const val PINK_PRIMARY = 0xFFFF85C0.toInt()
+    const val INDIGO_PRIMARY = 0xFF2F54EB.toInt()
+    const val LIME_PRIMARY = 0xFFA0D911.toInt()
+
     const val TEXT_MAIN = 0xFF314659.toInt()
     const val TEXT_SUB = 0xFF697B8C.toInt()
     const val TEXT_LIGHT = 0xFFA8A8A8.toInt()
@@ -39,5 +45,11 @@ object C {
     val CATEGORY_COLORS = intArrayOf(
         ANT_RED, ANT_ORANGE, ANT_GOLD, ANT_CYAN, ANT_PURPLE,
         ANT_MAGENTA, ANT_GREEN, ANT_INDIGO, ANT_BLUE, ANT_GRAY
+    )
+
+    /** 内置主题色（默认色板） */
+    val THEME_COLORS = intArrayOf(
+        ANT_BLUE, ANT_GREEN, ANT_PURPLE, ANT_ORANGE,
+        CYAN_PRIMARY, PINK_PRIMARY, INDIGO_PRIMARY, LIME_PRIMARY
     )
 }

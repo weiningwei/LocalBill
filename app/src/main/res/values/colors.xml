@@ -28,6 +28,34 @@
     <color name="orange_primary_bg">#FFF7E6</color>
     <color name="orange_primary_bg_dark">#2B1D11</color>
 
+    <!-- 品牌主色：青色（小清新） -->
+    <color name="cyan_primary">#13C2C2</color>
+    <color name="cyan_primary_dark">#08979C</color>
+    <color name="cyan_primary_light">#36CFC9</color>
+    <color name="cyan_primary_bg">#E6FFFB</color>
+    <color name="cyan_primary_bg_dark">#0B1C1C</color>
+
+    <!-- 品牌主色：粉色（小清新） -->
+    <color name="pink_primary">#FF85C0</color>
+    <color name="pink_primary_dark">#F759AB</color>
+    <color name="pink_primary_light">#FFADD2</color>
+    <color name="pink_primary_bg">#FFF0F6</color>
+    <color name="pink_primary_bg_dark">#2B1420</color>
+
+    <!-- 品牌主色：靛蓝（小清新） -->
+    <color name="indigo_primary">#2F54EB</color>
+    <color name="indigo_primary_dark">#1D39C4</color>
+    <color name="indigo_primary_light">#597EF7</color>
+    <color name="indigo_primary_bg">#F0F5FF</color>
+    <color name="indigo_primary_bg_dark">#131A2E</color>
+
+    <!-- 品牌主色：柠檬（小清新） -->
+    <color name="lime_primary">#A0D911</color>
+    <color name="lime_primary_dark">#7CB305</color>
+    <color name="lime_primary_light">#BAE637</color>
+    <color name="lime_primary_bg">#FCFFE6</color>
+    <color name="lime_primary_bg_dark">#22270F</color>
+
     <!-- 明色主题 -->
     <color name="bg">#F5F5F5</color>
     <color name="card">#FFFFFF</color>

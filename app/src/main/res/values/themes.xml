@@ -99,4 +99,68 @@
         <item name="primaryLight">@color/orange_primary_light</item>
         <item name="primaryBg">@color/orange_primary_bg_dark</item>
     </style>
+
+    <!-- 青色主题（小清新） -->
+    <style name="Theme.LocalBill.Cyan.Light" parent="Theme.LocalBill">
+        <item name="android:colorAccent">@color/cyan_primary</item>
+        <item name="primaryColor">@color/cyan_primary</item>
+        <item name="primaryDark">@color/cyan_primary_dark</item>
+        <item name="primaryLight">@color/cyan_primary_light</item>
+        <item name="primaryBg">@color/cyan_primary_bg</item>
+    </style>
+    <style name="Theme.LocalBill.Cyan.Dark" parent="Theme.LocalBill.Dark">
+        <item name="android:colorAccent">@color/cyan_primary</item>
+        <item name="primaryColor">@color/cyan_primary</item>
+        <item name="primaryDark">@color/cyan_primary_dark</item>
+        <item name="primaryLight">@color/cyan_primary_light</item>
+        <item name="primaryBg">@color/cyan_primary_bg_dark</item>
+    </style>
+
+    <!-- 粉色主题（小清新） -->
+    <style name="Theme.LocalBill.Pink.Light" parent="Theme.LocalBill">
+        <item name="android:colorAccent">@color/pink_primary</item>
+        <item name="primaryColor">@color/pink_primary</item>
+        <item name="primaryDark">@color/pink_primary_dark</item>
+        <item name="primaryLight">@color/pink_primary_light</item>
+        <item name="primaryBg">@color/pink_primary_bg</item>
+    </style>
+    <style name="Theme.LocalBill.Pink.Dark" parent="Theme.LocalBill.Dark">
+        <item name="android:colorAccent">@color/pink_primary</item>
+        <item name="primaryColor">@color/pink_primary</item>
+        <item name="primaryDark">@color/pink_primary_dark</item>
+        <item name="primaryLight">@color/pink_primary_light</item>
+        <item name="primaryBg">@color/pink_primary_bg_dark</item>
+    </style>
+
+    <!-- 靛蓝主题（小清新） -->
+    <style name="Theme.LocalBill.Indigo.Light" parent="Theme.LocalBill">
+        <item name="android:colorAccent">@color/indigo_primary</item>
+        <item name="primaryColor">@color/indigo_primary</item>
+        <item name="primaryDark">@color/indigo_primary_dark</item>
+        <item name="primaryLight">@color/indigo_primary_light</item>
+        <item name="primaryBg">@color/indigo_primary_bg</item>
+    </style>
+    <style name="Theme.LocalBill.Indigo.Dark" parent="Theme.LocalBill.Dark">
+        <item name="android:colorAccent">@color/indigo_primary</item>
+        <item name="primaryColor">@color/indigo_primary</item>
+        <item name="primaryDark">@color/indigo_primary_dark</item>
+        <item name="primaryLight">@color/indigo_primary_light</item>
+        <item name="primaryBg">@color/indigo_primary_bg_dark</item>
+    </style>
+
+    <!-- 柠檬主题（小清新） -->
+    <style name="Theme.LocalBill.Lime.Light" parent="Theme.LocalBill">
+        <item name="android:colorAccent">@color/lime_primary</item>
+        <item name="primaryColor">@color/lime_primary</item>
+        <item name="primaryDark">@color/lime_primary_dark</item>
+        <item name="primaryLight">@color/lime_primary_light</item>
+        <item name="primaryBg">@color/lime_primary_bg</item>
+    </style>
+    <style name="Theme.LocalBill.Lime.Dark" parent="Theme.LocalBill.Dark">
+        <item name="android:colorAccent">@color/lime_primary</item>
+        <item name="primaryColor">@color/lime_primary</item>
+        <item name="primaryDark">@color/lime_primary_dark</item>
+        <item name="primaryLight">@color/lime_primary_light</item>
+        <item name="primaryBg">@color/lime_primary_bg_dark</item>
+    </style>
 </resources>

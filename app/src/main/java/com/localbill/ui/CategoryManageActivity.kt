@@ -5,6 +5,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.app.Activity
 import android.content.Context
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -262,12 +263,15 @@ class CategoryManageActivity : Activity() {
     }
 }
 
-/** 横向色板选择器 */
+/** 色板选择器（多排排列，选中项带边框） */
 class ColorPickerView(
     context: Context,
     initial: Int,
     colors: IntArray = C.CATEGORY_COLORS,
-    private val onSelected: ((Int) -> Unit)? = null
+    private val onSelected: ((Int) -> Unit)? = null,
+    private val onLongPress: ((Int) -> Unit)? = null,
+    names: List<String>? = null,
+    columns: Int = 5
 ) : LinearLayout(context) {
 
     var selected: Int = initial
@@ -277,26 +281,68 @@ class ColorPickerView(
     private val colors = colors
 
     init {
-        orientation = HORIZONTAL
-        gravity = Gravity.CENTER
-        for (color in colors) {
-            val dot = UiKit.circle(context, color, 26)
-            dots.add(dot)
-            val lp = LayoutParams(Theme.dp(context, 26), Theme.dp(context, 26))
-            lp.setMargins(Theme.dp(context, 6), 0, Theme.dp(context, 6), 0)
-            addView(dot, lp)
-            dot.setOnClickListener {
-                selected = color
-                updateAlpha()
-                onSelected?.invoke(color)
+        orientation = VERTICAL
+        gravity = Gravity.CENTER_HORIZONTAL
+        val colCount = columns.coerceAtLeast(1)
+        val hasNames = names != null
+        val itemW = Theme.dp(context, if (hasNames) 44 else 26)
+
+        for (rowIndices in colors.indices.chunked(colCount)) {
+            val row = LinearLayout(context).apply {
+                orientation = HORIZONTAL
+                gravity = Gravity.CENTER
             }
+            for (i in rowIndices) {
+                val color = colors[i]
+                val dot = UiKit.circle(context, color, 26)
+                dots.add(dot)
+                val item: View
+                if (hasNames) {
+                    // 每个色点下方带名称（对齐），名称可为空串
+                    val col = LinearLayout(context).apply {
+                        orientation = VERTICAL
+                        gravity = Gravity.CENTER_HORIZONTAL
+                    }
+                    col.addView(dot)
+                    col.addView(TextView(context).apply {
+                        text = names!!.getOrElse(i) { "" }
+                        textSize = 10f
+                        setTextColor(Theme.subText(context))
+                        gravity = Gravity.CENTER
+                    }, LayoutParams(Theme.dp(context, 44), WRAP_CONTENT).apply {
+                        topMargin = Theme.dp(context, 2)
+                    })
+                    item = col
+                } else {
+                    item = dot
+                }
+                val lp = LayoutParams(itemW, WRAP_CONTENT)
+                lp.setMargins(Theme.dp(context, 6), Theme.dp(context, 4), Theme.dp(context, 6), Theme.dp(context, 4))
+                row.addView(item, lp)
+                item.setOnClickListener {
+                    selected = color
+                    updateAlpha()
+                    onSelected?.invoke(color)
+                }
+                item.setOnLongClickListener {
+                    onLongPress?.invoke(color)
+                    true
+                }
+            }
+            addView(row, LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         }
         updateAlpha()
     }
 
     private fun updateAlpha() {
         for ((i, dot) in dots.withIndex()) {
-            dot.alpha = if (colors[i] == selected) 1f else 0.3f
+            val isSel = colors[i] == selected
+            dot.alpha = if (isSel) 1f else 0.3f
+            val d = dot.background as? GradientDrawable
+            d?.setStroke(
+                if (isSel) Theme.dp(context, 2) else 0,
+                if (isSel) Theme.mainText(context) else 0
+            )
         }
     }
 }
