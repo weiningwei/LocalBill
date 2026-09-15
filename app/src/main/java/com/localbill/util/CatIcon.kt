@@ -22,6 +22,8 @@ object CatIcon {
 
     fun byName(name: String): Int = byNameOrNull(name) ?: R.drawable.ic_cat_other
 
+    // 二级分类图标按一级分类分组存放在 app/src/main/res-cat-<组名>/drawable/，
+    // 见 app/build.gradle.kts 的 catResDirs 与 .workbuddy/tools/gen_sub_icons.py 的 GROUPS。
     private fun byNameOrNull(name: String): Int? = when (name) {
         // 一级分类
         "餐饮" -> R.drawable.ic_cat_food
