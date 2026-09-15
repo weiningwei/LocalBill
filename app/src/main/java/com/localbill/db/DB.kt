@@ -12,7 +12,7 @@ import com.localbill.model.Kinds
 import com.localbill.model.Ledger
 import com.localbill.util.C
 
-class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 3) {
+class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4) {
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
@@ -64,7 +64,13 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 3)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // 无需兼容旧版本：schema 变更直接维护在 onCreate，DB 版本号用于标识当前结构
+        // schema 变更直接维护在 onCreate；此处仅做数据级迁移（幂等，不影响账单数据）
+        if (oldVersion < 4) {
+            // v2/v3 -> v4：一级分类「居住」更名为「住宿」（保留 id，历史账单不受影响）
+            db.execSQL("UPDATE category SET name='住宿' WHERE parent=0 AND kind=${Kinds.EXPENSE} AND name='居住'")
+            // 补齐新版内置分类（旧库停留在 v2 种子数据）
+            ensureSeedCategories(db)
+        }
     }
 
     private fun seed(db: SQLiteDatabase) {
@@ -98,65 +104,113 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 3)
         }
     }
 
-    private fun seedCategories(db: SQLiteDatabase) {
-        val expense = listOf(
-            "餐饮" to C.ANT_ORANGE to listOf("三餐", "外卖", "夜宵", "奶茶", "咖啡", "零食", "水果", "食材", "柴米油盐", "烟酒"),
-            "购物" to C.ANT_MAGENTA to listOf("超市", "鞋服", "数码", "电器", "家居", "厨房用品", "包包", "日用百货", "图书文具"),
-            "交通" to C.ANT_BLUE to listOf("公交地铁", "打车", "共享单车", "私家车", "火车", "大巴", "飞机", "加油", "充电", "停车", "维修保养"),
-            "住宿" to C.ANT_PURPLE to listOf("房租", "房贷", "水费", "电费", "燃气", "物业", "维修", "装修"),
-            "日常" to C.ANT_LIME to listOf("快递", "理发", "日用杂货"),
-            "学习" to C.ANT_INDIGO to listOf("网课", "书籍", "培训", "学费", "考试报名"),
-            "人情" to C.ANT_RED to listOf("送礼", "发红包", "孝心", "请客", "亲密付", "随礼"),
-            "娱乐" to C.ANT_GOLD to listOf("电影", "游戏", "休闲", "健身", "约会", "演唱会", "K歌", "宠物"),
-            "美妆" to C.PINK_PRIMARY to listOf("洗面奶", "化妆品", "面膜", "美容仪器", "护肤品"),
-            "旅游" to C.ANT_GREEN to listOf("景点门票", "酒店", "团费", "伴手礼", "签证"),
-            "医疗" to C.ANT_CYAN to listOf("药品", "就诊", "治疗", "住院", "保健", "体检"),
-            "会员租用" to C.ANT_GOLD to listOf("视频会员", "音乐会员", "书籍会员", "购物会员", "社交会员", "租赁"),
-            "通讯" to C.ANT_INDIGO to listOf("话费", "宽带", "流量"),
-            "其他" to C.ANT_GRAY to listOf("其他")
-        )
-        expense.forEachIndexed { topIdx, entry ->
-            val top = entry.first
-            val subs = entry.second
-            val cv = ContentValues().apply {
-                put("parent", 0)
-                put("name", top.first)
-                put("kind", 1)
-                put("color", top.second)
-                put("is_system", 1)
-                put("sort", topIdx)
-            }
-            val topId = db.insert("category", null, cv)
-            subs.forEachIndexed { subIdx, name ->
-                db.insert("category", null, ContentValues().apply {
-                    put("parent", topId)
-                    put("name", name)
-                    put("kind", 1)
-                    put("color", top.second)
-                    put("is_system", 1)
-                    put("sort", subIdx)
-                })
-            }
-        }
+    private fun seedCategories(db: SQLiteDatabase) = ensureSeedCategories(db)
 
-        val income = listOf(
-            "工资" to C.ANT_GREEN,
-            "兼职" to C.ANT_GREEN,
-            "理财" to C.ANT_GOLD,
-            "红包" to C.ANT_RED,
-            "报销" to C.ANT_BLUE,
-            "其他收入" to C.ANT_GRAY
-        )
-        income.forEachIndexed { i, (name, color) ->
-            db.insert("category", null, ContentValues().apply {
-                put("parent", 0)
-                put("name", name)
-                put("kind", 2)
-                put("color", color)
-                put("is_system", 1)
-                put("sort", i)
-            })
+    /** 内置支出分类种子：一级(名称, 颜色, 子分类列表)，顺序即展示顺序 */
+    private val seedExpense = listOf(
+        Triple("餐饮", C.ANT_ORANGE, listOf("三餐", "外卖", "夜宵", "奶茶", "咖啡", "零食", "水果", "食材", "柴米油盐", "烟酒")),
+        Triple("购物", C.ANT_MAGENTA, listOf("超市", "鞋服", "数码", "电器", "家居", "厨房用品", "包包", "日用百货", "图书文具")),
+        Triple("交通", C.ANT_BLUE, listOf("公交地铁", "打车", "共享单车", "私家车", "火车", "大巴", "飞机", "加油", "充电", "停车", "维修保养")),
+        Triple("住宿", C.ANT_PURPLE, listOf("房租", "房贷", "水费", "电费", "燃气", "物业", "维修", "装修")),
+        Triple("日常", C.ANT_LIME, listOf("快递", "理发", "日用杂货")),
+        Triple("学习", C.ANT_INDIGO, listOf("网课", "书籍", "培训", "学费", "考试报名")),
+        Triple("人情", C.ANT_RED, listOf("送礼", "发红包", "孝心", "请客", "亲密付", "随礼")),
+        Triple("娱乐", C.ANT_GOLD, listOf("电影", "游戏", "休闲", "健身", "约会", "演唱会", "K歌", "宠物")),
+        Triple("美妆", C.PINK_PRIMARY, listOf("洗面奶", "化妆品", "面膜", "美容仪器", "护肤品")),
+        Triple("旅游", C.ANT_GREEN, listOf("景点门票", "酒店", "团费", "伴手礼", "签证")),
+        Triple("医疗", C.ANT_CYAN, listOf("药品", "就诊", "治疗", "住院", "保健", "体检")),
+        Triple("会员租用", C.ANT_GOLD, listOf("视频会员", "音乐会员", "书籍会员", "购物会员", "社交会员", "租赁")),
+        Triple("通讯", C.ANT_INDIGO, listOf("话费", "宽带", "流量")),
+        Triple("其他", C.ANT_GRAY, listOf("其他"))
+    )
+
+    /** 内置收入分类种子：一级(名称, 颜色) */
+    private val seedIncome = listOf(
+        "工资" to C.ANT_GREEN,
+        "兼职" to C.ANT_GREEN,
+        "理财" to C.ANT_GOLD,
+        "红包" to C.ANT_RED,
+        "报销" to C.ANT_BLUE,
+        "其他收入" to C.ANT_GRAY
+    )
+
+    /**
+     * 幂等补齐内置分类（onCreate 与 onUpgrade 共用）：
+     * - 缺失的一级分类整组插入（含子分类）
+     * - 已存在的一级分类仅追加缺失的子分类，并校准颜色/排序
+     * 账单通过 category_id 关联，此过程不影响历史账单
+     */
+    private fun ensureSeedCategories(db: SQLiteDatabase) {
+        seedExpense.forEachIndexed { topIdx, (name, color, subs) ->
+            var topId = findTopCategoryId(db, name, Kinds.EXPENSE)
+            if (topId == null) {
+                topId = db.insert("category", null, ContentValues().apply {
+                    put("parent", 0)
+                    put("name", name)
+                    put("kind", Kinds.EXPENSE)
+                    put("color", color)
+                    put("is_system", 1)
+                    put("sort", topIdx)
+                })
+            } else {
+                db.update("category", ContentValues().apply {
+                    put("color", color)
+                    put("sort", topIdx)
+                }, "id=?", arrayOf(topId.toString()))
+            }
+            val existing = subNamesOf(db, topId)
+            var nextSort = existing.size
+            subs.forEach { sub ->
+                if (sub !in existing) {
+                    db.insert("category", null, ContentValues().apply {
+                        put("parent", topId)
+                        put("name", sub)
+                        put("kind", Kinds.EXPENSE)
+                        put("color", color)
+                        put("is_system", 1)
+                        put("sort", nextSort++)
+                    })
+                }
+            }
         }
+        seedIncome.forEachIndexed { i, (name, color) ->
+            val topId = findTopCategoryId(db, name, Kinds.INCOME)
+            if (topId == null) {
+                db.insert("category", null, ContentValues().apply {
+                    put("parent", 0)
+                    put("name", name)
+                    put("kind", Kinds.INCOME)
+                    put("color", color)
+                    put("is_system", 1)
+                    put("sort", i)
+                })
+            } else {
+                db.update("category", ContentValues().apply {
+                    put("color", color)
+                    put("sort", i)
+                }, "id=?", arrayOf(topId.toString()))
+            }
+        }
+    }
+
+    private fun findTopCategoryId(db: SQLiteDatabase, name: String, kind: Int): Long? {
+        db.query(
+            "category", arrayOf("id"), "parent=0 AND name=? AND kind=?",
+            arrayOf(name, kind.toString()), null, null, null
+        ).use { c ->
+            return if (c.moveToFirst()) c.getLong(0) else null
+        }
+    }
+
+    private fun subNamesOf(db: SQLiteDatabase, parentId: Long): Set<String> {
+        val out = HashSet<String>()
+        db.query(
+            "category", arrayOf("name"), "parent=?",
+            arrayOf(parentId.toString()), null, null, null
+        ).use { c ->
+            while (c.moveToNext()) out.add(c.getString(0))
+        }
+        return out
     }
 
     /* ---------------- Ledger ---------------- */
