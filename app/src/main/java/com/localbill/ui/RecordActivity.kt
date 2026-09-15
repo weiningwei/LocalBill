@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.EditText
-import android.widget.GridView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -42,14 +41,17 @@ class RecordActivity : Activity() {
         const val EXTRA_DAY = "day"                   // Int YYYYMMDD（可选）
         const val EXTRA_TIME = "time"                 // Int 当日秒数（可选）
         const val EXTRA_CATEGORY = "category"         // String 一级分类名（可选）
+
+        /** 分类网格每行格子数 */
+        private const val COLUMNS = 5
     }
 
     private var editId: Long = -1
     private var kind = Kinds.EXPENSE
 
     private lateinit var tvAmount: TextView
-    private lateinit var topGrid: GridView
-    private lateinit var subGrid: GridView
+    private lateinit var topGrid: LinearLayout
+    private lateinit var subGrid: LinearLayout
     private lateinit var subRow: LinearLayout
     private lateinit var tvAccount: TextView
     private lateinit var tvDate: TextView
@@ -67,8 +69,6 @@ class RecordActivity : Activity() {
     private var time = DateUtil.timeNow()
 
     private var amountStr = ""
-    private var topAdapter: CatAdapter? = null
-    private var subAdapter: CatAdapter? = null
     private val kindButtons = ArrayList<TextView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -171,22 +171,21 @@ class RecordActivity : Activity() {
         root.addView(amountWrap, LinearLayout.LayoutParams(MATCH_PARENT, Theme.dp(ctx, 62)))
 
         // 分类网格
+        // 注意：不要在这里用 GridView —— 它被放在 ScrollView 内且高度为 WRAP_CONTENT 时，
+        // 只会测量出一行（嵌套滚动测量问题），导致其余一级分类被“藏”起来
         val catScroll = android.widget.ScrollView(ctx)
         val catBox = UiKit.vertical(ctx)
-        topGrid = GridView(ctx).apply {
-            numColumns = 5
-            horizontalSpacing = Theme.dp(ctx, 8)
-            verticalSpacing = Theme.dp(ctx, 6)
-            stretchMode = GridView.STRETCH_COLUMN_WIDTH
-        }
+        topGrid = UiKit.vertical(ctx)
         catBox.addView(topGrid, ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         subRow = UiKit.vertical(ctx)
-        subGrid = GridView(ctx).apply {
-            numColumns = 5
-            horizontalSpacing = Theme.dp(ctx, 8)
-            verticalSpacing = Theme.dp(ctx, 6)
-            stretchMode = GridView.STRETCH_COLUMN_WIDTH
-        }
+        val divider = View(ctx).apply { setBackgroundColor(Theme.divider(ctx)) }
+        subRow.addView(divider, LinearLayout.LayoutParams(MATCH_PARENT, 1).apply {
+            topMargin = Theme.dp(ctx, 8)
+            bottomMargin = Theme.dp(ctx, 8)
+            leftMargin = Theme.dp(ctx, 14)
+            rightMargin = Theme.dp(ctx, 14)
+        })
+        subGrid = UiKit.vertical(ctx)
         subRow.addView(subGrid, ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         catBox.addView(subRow)
         catScroll.addView(catBox, ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
@@ -417,8 +416,7 @@ class RecordActivity : Activity() {
                 it.kind == kind && selectedTop?.id == it.parent
             }
         }
-        topAdapter = CatAdapter(topCats, true)
-        topGrid.adapter = topAdapter
+        renderGrid(topGrid, topCats, true)
         refreshSubGrid()
         updateKind()
     }
@@ -430,11 +428,73 @@ class RecordActivity : Activity() {
         // 有子分类时，子网格首项放一级分类本身（参考有钱记账，可直接记到一级分类）
         subCats = if (subs.isEmpty()) emptyList() else listOf(selectedTop!!) + subs
         subRow.visibility = if (subCats.isEmpty()) View.GONE else View.VISIBLE
-        if (subCats.isNotEmpty()) {
-            subAdapter = CatAdapter(subCats, false)
-            subGrid.adapter = subAdapter
+        if (subCats.isNotEmpty()) renderGrid(subGrid, subCats, false)
+    }
+
+    /** 把分类铺成每行 [COLUMNS] 个、自动换行的网格；不足一行时补空位保持列对齐 */
+    private fun renderGrid(grid: LinearLayout, items: List<Category>, isTop: Boolean) {
+        grid.removeAllViews()
+        items.chunked(COLUMNS).forEach { rowItems ->
+            val row = UiKit.horizontal(ctx).apply {
+                setPadding(0, Theme.dp(ctx, 3), 0, Theme.dp(ctx, 3))
+            }
+            rowItems.forEach { cat ->
+                row.addView(catCell(cat, isTop), LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
+            }
+            repeat(COLUMNS - rowItems.size) {
+                row.addView(View(ctx), LinearLayout.LayoutParams(0, 1, 1f))
+            }
+            grid.addView(row, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         }
     }
+
+    /** 分类格子：色块圆形图标 + 名称，选中时浅色底与主题色文字 */
+    private fun catCell(cat: Category, isTop: Boolean): View {
+        val selected = if (isTop) {
+            selectedTop?.id == cat.id
+        } else if (cat.parent == 0L) {
+            // 子网格首项是一级分类本身：未选任何子分类时视为选中
+            selectedSub == null
+        } else {
+            selectedSub?.id == cat.id
+        }
+        val box = UiKit.vertical(ctx).apply {
+            gravity = Gravity.CENTER
+            setPadding(Theme.dp(ctx, 2), Theme.dp(ctx, 4), Theme.dp(ctx, 2), Theme.dp(ctx, 4))
+            background = UiKit.rounded(ctx, if (selected) lightTint(cat.color) else 0x00000000, 10)
+        }
+        val circle = UiKit.horizontal(ctx).apply {
+            gravity = Gravity.CENTER
+            background = UiKit.rounded(ctx, cat.color, 20)
+        }
+        circle.addView(
+            ImageView(ctx).apply { setImageResource(CatIcon.of(cat)) },
+            LinearLayout.LayoutParams(Theme.dp(ctx, 24), Theme.dp(ctx, 24))
+        )
+        box.addView(circle, LinearLayout.LayoutParams(Theme.dp(ctx, 40), Theme.dp(ctx, 40)))
+        box.addView(
+            UiKit.text(ctx, cat.name, 12f, if (selected) cat.color else Theme.mainText(ctx)),
+            LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
+                topMargin = Theme.dp(ctx, 3)
+            }
+        )
+        box.setOnClickListener {
+            clearRemarkFocus()
+            if (isTop) {
+                selectedTop = cat
+                selectedSub = null
+                refreshSubGrid()
+                renderGrid(topGrid, topCats, true)
+            } else {
+                // 点击子网格首项（一级分类本身）= 记到一级分类
+                selectedSub = if (cat.parent == 0L) null else cat
+                renderGrid(subGrid, subCats, false)
+            }
+        }
+        return box
+    }
+
+    private fun lightTint(color: Int): Int = (0x20 shl 24) or (color and 0xFFFFFF)
 
     private fun pickAccount() {
         val names = accounts.map { it.name }.toTypedArray()
@@ -576,8 +636,6 @@ class RecordActivity : Activity() {
         tvAccount.text = selectedAccount?.name ?: "无账户"
         tvDate.text = DateUtil.dayTitle(day)
         tvTime.text = DateUtil.timeText(time)
-        topAdapter?.notifyDataSetChanged()
-        subAdapter?.notifyDataSetChanged()
     }
 
     private fun saveBill() {
@@ -603,67 +661,6 @@ class RecordActivity : Activity() {
         Prefs.rememberRecordDay(day)
         Toast.makeText(ctx, R.string.toast_saved, Toast.LENGTH_SHORT).show()
         finish()
-    }
-
-    /* ---------------- 分类网格适配器 ---------------- */
-
-    inner class CatAdapter(private val items: List<Category>, private val isTop: Boolean) : BaseAdapter() {
-        override fun getCount(): Int = items.size
-        override fun getItem(pos: Int): Any = items[pos]
-        override fun getItemId(pos: Int): Long = items[pos].id
-
-        override fun getView(pos: Int, convertView: View?, parent: ViewGroup?): View {
-            val cat = items[pos]
-            val selected = if (isTop) {
-                selectedTop?.id == cat.id
-            } else if (cat.parent == 0L) {
-                // 子网格首项是一级分类本身：未选任何子分类时视为选中
-                selectedSub == null
-            } else {
-                selectedSub?.id == cat.id
-            }
-            val box = UiKit.vertical(this@RecordActivity).apply {
-                gravity = Gravity.CENTER
-                setPadding(Theme.dp(this@RecordActivity, 2), Theme.dp(this@RecordActivity, 4),
-                    Theme.dp(this@RecordActivity, 2), Theme.dp(this@RecordActivity, 4))
-                background = UiKit.rounded(this@RecordActivity,
-                    if (selected) lightTint(cat.color) else 0x00000000, 10)
-            }
-            val circle = UiKit.horizontal(this@RecordActivity).apply {
-                gravity = Gravity.CENTER
-                background = UiKit.rounded(this@RecordActivity, cat.color, 20)
-            }
-            val lp = LinearLayout.LayoutParams(Theme.dp(this@RecordActivity, 40), Theme.dp(this@RecordActivity, 40))
-            val icon = ImageView(this@RecordActivity).apply {
-                setImageResource(CatIcon.of(cat))
-            }
-            circle.addView(icon, LinearLayout.LayoutParams(Theme.dp(this@RecordActivity, 24), Theme.dp(this@RecordActivity, 24)))
-            box.addView(circle, lp)
-            val name = UiKit.text(this@RecordActivity, cat.name, 12f,
-                if (selected) cat.color else Theme.mainText(this@RecordActivity))
-            box.addView(name, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
-                topMargin = Theme.dp(this@RecordActivity, 3)
-            })
-            box.setOnClickListener {
-                clearRemarkFocus()
-                if (isTop) {
-                    selectedTop = cat
-                    selectedSub = null
-                    refreshSubGrid()
-                    topAdapter?.notifyDataSetChanged()
-                } else {
-                    // 点击子网格首项（一级分类本身）= 记到一级分类
-                    selectedSub = if (cat.parent == 0L) null else cat
-                    subAdapter?.notifyDataSetChanged()
-                }
-            }
-            return box
-        }
-
-        private fun lightTint(color: Int): Int {
-            val a = 0x20
-            return (a shl 24) or (color and 0xFFFFFF)
-        }
     }
 }
 
