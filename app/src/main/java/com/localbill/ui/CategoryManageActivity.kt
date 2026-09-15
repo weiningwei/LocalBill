@@ -148,24 +148,24 @@ class CategoryManageActivity : Activity() {
     }
 
     /**
-     * 分类配色区块：色板统一为主题色系的深浅变体。
-     * 图标底色已统一跟随主题色，此处颜色仅用于统计图表的扇区/排行区分。
+     * 分类配色区块：色板是「当前主题色系的深浅档位」，随主题色实时变化。
+     * 图标底色已统一跟随主题色，此处档位只决定该分类在统计图表中的深浅。
      */
-    private fun colorBlock(box: LinearLayout, initial: Int): ColorPickerView {
+    private fun colorBlock(box: LinearLayout, tone: Int): ColorPickerView {
         val palette = Theme.palette(ctx)
         val picker = ColorPickerView(
             ctx,
-            if (palette.contains(initial)) initial else palette[(palette.size - 1) / 2],
+            palette[tone.coerceIn(0, palette.size - 1)],
             palette,
             columns = 4
         )
-        box.addView(UiKit.text(ctx, "统计图表颜色", 13f, Theme.subText(ctx)).apply {
+        box.addView(UiKit.text(ctx, "统计图表深浅", 13f, Theme.subText(ctx)).apply {
             setPadding(0, Theme.dp(ctx, 12), 0, 0)
         })
         box.addView(picker, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
             topMargin = Theme.dp(ctx, 6)
         })
-        box.addView(UiKit.text(ctx, "图标底色统一跟随主题色，此处颜色仅供统计图表区分", 11f, Theme.lightText(ctx)).apply {
+        box.addView(UiKit.text(ctx, "色板随主题色变化，此处只影响统计图表中的深浅", 11f, Theme.lightText(ctx)).apply {
             setPadding(0, Theme.dp(ctx, 6), 0, 0)
         })
         return picker
@@ -178,10 +178,9 @@ class CategoryManageActivity : Activity() {
             setTextColor(Theme.mainText(ctx))
             setHintTextColor(Theme.lightText(ctx))
         }
-        val palette = Theme.palette(ctx)
         val box = UiKit.vertical(ctx)
         box.addView(name)
-        val picker = colorBlock(box, palette[items.size % palette.size])
+        val picker = colorBlock(box, items.size % Theme.PALETTE_SIZE)
         val dialog = android.app.AlertDialog.Builder(ctx)
             .setTitle("添加分类")
             .setView(box)
@@ -190,7 +189,7 @@ class CategoryManageActivity : Activity() {
                 if (n.isEmpty()) {
                     Toast.makeText(ctx, "请输入名称", Toast.LENGTH_SHORT).show()
                 } else {
-                    App.db.addCategory(parentId, n, kind, picker.selected)
+                    App.db.addCategory(parentId, n, kind, picker.selectedIndex)
                     reload()
                 }
             }
@@ -216,7 +215,7 @@ class CategoryManageActivity : Activity() {
                 if (n.isEmpty()) {
                     Toast.makeText(ctx, "请输入名称", Toast.LENGTH_SHORT).show()
                 } else {
-                    App.db.updateCategory(cat.id, n, picker.selected)
+                    App.db.updateCategory(cat.id, n, picker.selectedIndex)
                     reload()
                 }
             }
@@ -295,6 +294,9 @@ class ColorPickerView(
 
     var selected: Int = initial
         private set
+
+    /** 当前选中项在色板中的档位索引（分类配色存档位，故需要索引而非色值） */
+    val selectedIndex: Int get() = colors.indexOf(selected).coerceAtLeast(0)
 
     private val dots = ArrayList<View>()
     private val colors = colors

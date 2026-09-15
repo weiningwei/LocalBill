@@ -75,12 +75,15 @@ object Theme {
     /** 向黑色混色，得到更深的颜色 */
     private fun shade(color: Int, blackRatio: Float): Int = mix(color, 0x000000, blackRatio)
 
+    /** 主题色板的档位数：分类配色档位（Category.color）取值范围为 0..PALETTE_SIZE-1 */
+    const val PALETTE_SIZE = 8
+
     /**
      * 主题色系色板：固定色相（跟随主题色）+ 由亮到暗的明度阶梯（越深越饱和）派生的一组变体。
-     * 用于「需要多色区分、但整体观感仍要统一在主题色系内」的场景（如分类配色）。
-     * 索引 0 最亮最淡，索引越大越深越浓；不同主题色下阶梯结构一致，观感统一。
+     * 用于「需要多色区分、但整体观感仍要统一在主题色系内」的场景（分类配色、统计图表）。
+     * 索引 0 最亮最淡，索引越大越深越浓；切换主题色后整块色板实时变化。
      */
-    fun palette(ctx: Context, count: Int = 8): IntArray {
+    fun palette(ctx: Context, count: Int = PALETTE_SIZE): IntArray {
         val hsv = FloatArray(3)
         Color.colorToHSV(primary(ctx), hsv)
         val hue = hsv[0]
@@ -90,6 +93,15 @@ object Theme {
             val s = (sat * (0.80f + 0.30f * t)).coerceIn(0.35f, 1f)
             Color.HSVToColor(floatArrayOf(hue, s, 0.95f - 0.55f * t))
         }
+    }
+
+    /**
+     * 取某个档位在当前主题色系下的实际颜色。
+     * 分类的 color 字段存的就是档位，渲染时统一走这里，从而与主题色实时联动。
+     */
+    fun toneColor(ctx: Context, tone: Int): Int {
+        val p = palette(ctx)
+        return p[tone.coerceIn(0, p.size - 1)]
     }
 
     fun dp(ctx: Context, value: Int): Int {

@@ -25,6 +25,7 @@ LocalBill — a local-only Android expense tracker (Kotlin, no backend). UI stri
   - Money is stored as **integer cents** (`Long`), not decimal — use `Money.parseToCents` / `Money.format`.
   - `day` is an `Int` `YYYYMMDD`; `monthKey` is an `Int` `YYYYMM`; `time` is seconds-since-midnight. Use `DateUtil` helpers.
   - `kind` is 1 = expense (`Kinds.EXPENSE`), 2 = income (`Kinds.INCOME`). Categories are two-level: top (parent=0) + sub.
+  - **`Category.color` is a theme-palette tone index (0..`Theme.PALETTE_SIZE-1`), NOT a color value.** Resolve it with `Theme.toneColor(ctx, cat.color)` at render time so charts follow the current theme color live. `Account.color`, by contrast, is a real ARGB value.
 - Account `balance` is reconciled manually in `applyBalance` when bills are added/updated/deleted/restored/hard-deleted. Never update a balance in SQL without preserving that invariant.
 
 ## Auto-import (accessibility)

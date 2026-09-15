@@ -11,8 +11,9 @@ import com.localbill.model.Category
 import com.localbill.model.Kinds
 import com.localbill.model.Ledger
 import com.localbill.util.C
+import com.localbill.util.Theme
 
-class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4) {
+class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 5) {
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
@@ -100,12 +101,14 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4)
     }
 
     private fun seedCategories(db: SQLiteDatabase) {
-        seedExpense.forEachIndexed { topIdx, (name, color, subs) ->
+        // 分类的 color 字段存的是「主题色板档位」而非具体色值，渲染时由 Theme.toneColor 按当前主题色解析
+        seedExpense.forEachIndexed { topIdx, (name, subs) ->
+            val tone = topIdx % Theme.PALETTE_SIZE
             val topId = db.insert("category", null, ContentValues().apply {
                 put("parent", 0)
                 put("name", name)
                 put("kind", Kinds.EXPENSE)
-                put("color", color)
+                put("color", tone)
                 put("is_system", 1)
                 put("sort", topIdx)
             })
@@ -114,50 +117,50 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4)
                     put("parent", topId)
                     put("name", sub)
                     put("kind", Kinds.EXPENSE)
-                    put("color", color)
+                    put("color", tone)
                     put("is_system", 1)
                     put("sort", subIdx)
                 })
             }
         }
-        seedIncome.forEachIndexed { i, (name, color) ->
+        seedIncome.forEachIndexed { i, name ->
             db.insert("category", null, ContentValues().apply {
                 put("parent", 0)
                 put("name", name)
                 put("kind", Kinds.INCOME)
-                put("color", color)
+                put("color", i % Theme.PALETTE_SIZE)
                 put("is_system", 1)
                 put("sort", i)
             })
         }
     }
 
-    /** 内置支出分类种子：一级(名称, 颜色, 子分类列表)，顺序即展示顺序 */
+    /** 内置支出分类种子：一级(名称, 子分类列表)，顺序即展示顺序；配色档位按顺序自动分配 */
     private val seedExpense = listOf(
-        Triple("餐饮", C.ANT_ORANGE, listOf("三餐", "外卖", "夜宵", "奶茶", "咖啡", "零食", "水果", "食材", "柴米油盐", "烟酒")),
-        Triple("购物", C.ANT_MAGENTA, listOf("超市", "鞋服", "数码", "电器", "家居", "厨房用品", "包包", "日用百货", "图书文具")),
-        Triple("交通", C.ANT_BLUE, listOf("公交地铁", "打车", "共享单车", "私家车", "火车", "大巴", "飞机", "加油", "充电", "停车", "维修保养")),
-        Triple("住宿", C.ANT_PURPLE, listOf("房租", "房贷", "水费", "电费", "燃气", "物业", "维修", "装修")),
-        Triple("日常", C.ANT_LIME, listOf("快递", "理发", "日用杂货")),
-        Triple("学习", C.ANT_INDIGO, listOf("网课", "书籍", "培训", "学费", "考试报名")),
-        Triple("人情", C.ANT_RED, listOf("送礼", "发红包", "孝心", "请客", "亲密付", "随礼")),
-        Triple("娱乐", C.ANT_GOLD, listOf("电影", "游戏", "休闲", "健身", "约会", "演唱会", "K歌", "宠物")),
-        Triple("美妆", C.PINK_PRIMARY, listOf("洗面奶", "化妆品", "面膜", "美容仪器", "护肤品")),
-        Triple("旅游", C.ANT_GREEN, listOf("景点门票", "酒店", "团费", "伴手礼", "签证")),
-        Triple("医疗", C.ANT_CYAN, listOf("药品", "就诊", "治疗", "住院", "保健", "体检")),
-        Triple("会员租用", C.ANT_GOLD, listOf("视频会员", "音乐会员", "书籍会员", "购物会员", "社交会员", "租赁")),
-        Triple("通讯", C.ANT_INDIGO, listOf("话费", "宽带", "流量")),
-        Triple("其他", C.ANT_GRAY, listOf("其他"))
+        "餐饮" to listOf("三餐", "外卖", "夜宵", "奶茶", "咖啡", "零食", "水果", "食材", "柴米油盐", "烟酒"),
+        "购物" to listOf("超市", "鞋服", "数码", "电器", "家居", "厨房用品", "包包", "日用百货", "图书文具"),
+        "交通" to listOf("公交地铁", "打车", "共享单车", "私家车", "火车", "大巴", "飞机", "加油", "充电", "停车", "维修保养"),
+        "住宿" to listOf("房租", "房贷", "水费", "电费", "燃气", "物业", "维修", "装修"),
+        "日常" to listOf("快递", "理发", "日用杂货"),
+        "学习" to listOf("网课", "书籍", "培训", "学费", "考试报名"),
+        "人情" to listOf("送礼", "发红包", "孝心", "请客", "亲密付", "随礼"),
+        "娱乐" to listOf("电影", "游戏", "休闲", "健身", "约会", "演唱会", "K歌", "宠物"),
+        "美妆" to listOf("洗面奶", "化妆品", "面膜", "美容仪器", "护肤品"),
+        "旅游" to listOf("景点门票", "酒店", "团费", "伴手礼", "签证"),
+        "医疗" to listOf("药品", "就诊", "治疗", "住院", "保健", "体检"),
+        "会员租用" to listOf("视频会员", "音乐会员", "书籍会员", "购物会员", "社交会员", "租赁"),
+        "通讯" to listOf("话费", "宽带", "流量"),
+        "其他" to listOf("其他")
     )
 
-    /** 内置收入分类种子：一级(名称, 颜色) */
+    /** 内置收入分类种子：一级名称，顺序即展示顺序 */
     private val seedIncome = listOf(
-        "工资" to C.ANT_GREEN,
-        "兼职" to C.ANT_GREEN,
-        "理财" to C.ANT_GOLD,
-        "红包" to C.ANT_RED,
-        "报销" to C.ANT_BLUE,
-        "其他收入" to C.ANT_GRAY
+        "工资",
+        "兼职",
+        "理财",
+        "红包",
+        "报销",
+        "其他收入"
     )
 
     /* ---------------- Ledger ---------------- */
@@ -299,6 +302,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4)
         }
     }
 
+    /** color 为主题色板档位（0..Theme.PALETTE_SIZE-1），不是具体色值 */
     fun addCategory(parent: Long, name: String, kind: Int, color: Int): Long {
         return db.insert("category", null, ContentValues().apply {
             put("parent", parent)
@@ -310,6 +314,7 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4)
         })
     }
 
+    /** color 为主题色板档位（0..Theme.PALETTE_SIZE-1），不是具体色值 */
     fun updateCategory(id: Long, name: String, color: Int) {
         db.update("category", ContentValues().apply {
             put("name", name)

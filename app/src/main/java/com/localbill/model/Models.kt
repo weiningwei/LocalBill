@@ -22,6 +22,7 @@ data class Category(
     val parent: Long,
     val name: String,
     val kind: Int,
+    /** 主题色板档位（0 最亮 → PALETTE_SIZE-1 最深），非具体色值；渲染时用 Theme.toneColor(ctx, color) 解析 */
     val color: Int,
     val isSystem: Boolean,
     val sort: Int

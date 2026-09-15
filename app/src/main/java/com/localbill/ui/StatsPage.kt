@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import com.localbill.App
+import com.localbill.model.Category
 import com.localbill.model.Kinds
 import com.localbill.util.C
 import com.localbill.util.DateUtil
@@ -153,12 +154,12 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
         // 分类占比
         val amounts = App.db.categoryAmounts(ledger.id, Kinds.EXPENSE, from, to)
         val total = amounts.sumOf { it.second }
-        pieChart.slices = amounts.map { PieChartView.Slice(it.first.color, it.second.toFloat()) }
+        pieChart.slices = amounts.map { PieChartView.Slice(tone(it.first), it.second.toFloat()) }
         legendBox.removeAllViews()
         if (total > 0) {
             amounts.forEach { (cat, amt) ->
                 val pct = amt * 100f / total
-                legendBox.addView(legendRow(cat.color, cat.name, Money.format(amt), pct))
+                legendBox.addView(legendRow(tone(cat), cat.name, Money.format(amt), pct))
             }
         } else {
             legendBox.addView(UiKit.text(host, "本月暂无支出", 13f, Theme.lightText(host),
@@ -178,10 +179,13 @@ class StatsPage(private val host: MainActivity) : LinearLayout(host) {
         rankBox.removeAllViews()
         if (total > 0) {
             amounts.forEach { (cat, amt) ->
-                rankBox.addView(rankRow(cat.color, cat.name, Money.format(amt), amt * 100f / total))
+                rankBox.addView(rankRow(tone(cat), cat.name, Money.format(amt), amt * 100f / total))
             }
         }
     }
+
+    /** 分类在图表中的颜色：由分类的档位 + 当前主题色实时解析，切换主题色立即生效 */
+    private fun tone(cat: Category): Int = Theme.toneColor(host, cat.color)
 
     private fun legendRow(color: Int, name: String, amount: String, pct: Float): LinearLayout {
         val row = UiKit.horizontal(host).apply {
