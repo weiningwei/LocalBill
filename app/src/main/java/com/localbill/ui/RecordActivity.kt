@@ -412,9 +412,10 @@ class RecordActivity : Activity() {
             selectedSub = null
         } else {
             selectedTop = selectedTop?.takeIf { it.kind == kind && it.parent == 0L } ?: topCats.first()
+            // 默认不选子分类：子网格首项为一级分类本身，可直接记到一级分类
             selectedSub = selectedSub?.takeIf {
                 it.kind == kind && selectedTop?.id == it.parent
-            } ?: subCategoriesOf(selectedTop!!).firstOrNull()
+            }
         }
         topAdapter = CatAdapter(topCats, true)
         topGrid.adapter = topAdapter
@@ -425,7 +426,9 @@ class RecordActivity : Activity() {
     private fun subCategoriesOf(top: Category): List<Category> = App.db.subCategories(top.id)
 
     private fun refreshSubGrid() {
-        subCats = selectedTop?.let { subCategoriesOf(it) } ?: emptyList()
+        val subs = selectedTop?.let { subCategoriesOf(it) } ?: emptyList()
+        // 有子分类时，子网格首项放一级分类本身（参考有钱记账，可直接记到一级分类）
+        subCats = if (subs.isEmpty()) emptyList() else listOf(selectedTop!!) + subs
         subRow.visibility = if (subCats.isEmpty()) View.GONE else View.VISIBLE
         if (subCats.isNotEmpty()) {
             subAdapter = CatAdapter(subCats, false)
@@ -611,7 +614,14 @@ class RecordActivity : Activity() {
 
         override fun getView(pos: Int, convertView: View?, parent: ViewGroup?): View {
             val cat = items[pos]
-            val selected = (if (isTop) selectedTop else selectedSub)?.id == cat.id
+            val selected = if (isTop) {
+                selectedTop?.id == cat.id
+            } else if (cat.parent == 0L) {
+                // 子网格首项是一级分类本身：未选任何子分类时视为选中
+                selectedSub == null
+            } else {
+                selectedSub?.id == cat.id
+            }
             val box = UiKit.vertical(this@RecordActivity).apply {
                 gravity = Gravity.CENTER
                 setPadding(Theme.dp(this@RecordActivity, 2), Theme.dp(this@RecordActivity, 4),
@@ -642,7 +652,8 @@ class RecordActivity : Activity() {
                     refreshSubGrid()
                     topAdapter?.notifyDataSetChanged()
                 } else {
-                    selectedSub = cat
+                    // 点击子网格首项（一级分类本身）= 记到一级分类
+                    selectedSub = if (cat.parent == 0L) null else cat
                     subAdapter?.notifyDataSetChanged()
                 }
             }
