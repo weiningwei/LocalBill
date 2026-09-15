@@ -16,6 +16,7 @@ object C {
     const val ANT_INDIGO = 0xFF2F54EB.toInt()
     const val ANT_BLUE = 0xFF1890FF.toInt()
     const val ANT_GRAY = 0xFF999999.toInt()
+    const val ANT_LIME = 0xFFA0D911.toInt()
 
     const val EXPENSE = 0xFFF5222D.toInt()
     const val INCOME = 0xFF52C41A.toInt()
@@ -44,7 +45,7 @@ object C {
 
     val CATEGORY_COLORS = intArrayOf(
         ANT_RED, ANT_ORANGE, ANT_GOLD, ANT_CYAN, ANT_PURPLE,
-        ANT_MAGENTA, ANT_GREEN, ANT_INDIGO, ANT_BLUE, ANT_GRAY
+        ANT_MAGENTA, ANT_GREEN, ANT_INDIGO, ANT_BLUE, ANT_LIME, ANT_GRAY
     )
 
     /** 内置主题色（默认色板） */

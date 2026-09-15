@@ -12,7 +12,7 @@ import com.localbill.model.Kinds
 import com.localbill.model.Ledger
 import com.localbill.util.C
 
-class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 2) {
+class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 3) {
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
@@ -100,15 +100,19 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 2)
 
     private fun seedCategories(db: SQLiteDatabase) {
         val expense = listOf(
-            "餐饮" to C.ANT_ORANGE to listOf("早餐", "午餐", "晚餐", "外卖", "水果", "零食", "饮料", "烟酒"),
-            "交通" to C.ANT_BLUE to listOf("公交地铁", "打车", "加油", "停车", "火车", "飞机", "维修保养"),
-            "购物" to C.ANT_MAGENTA to listOf("服饰", "日用百货", "美妆", "数码", "家电", "图书文具"),
-            "居住" to C.ANT_PURPLE to listOf("房租", "房贷", "水电燃气", "物业", "装修", "家居"),
-            "医疗" to C.ANT_CYAN to listOf("药品", "医院", "体检", "健身", "保险"),
-            "娱乐" to C.ANT_GOLD to listOf("电影", "游戏", "旅游", "宠物", "运动", "唱歌"),
-            "通讯" to C.ANT_GREEN to listOf("话费", "宽带", "会员订阅"),
-            "人情" to C.ANT_RED to listOf("礼物", "红包", "请客", "长辈", "随礼"),
-            "学习" to C.ANT_INDIGO to listOf("学费", "培训", "书籍", "考试报名"),
+            "餐饮" to C.ANT_ORANGE to listOf("三餐", "外卖", "夜宵", "奶茶", "咖啡", "零食", "水果", "食材", "柴米油盐", "烟酒"),
+            "购物" to C.ANT_MAGENTA to listOf("超市", "鞋服", "数码", "电器", "家居", "厨房用品", "包包", "日用百货", "图书文具"),
+            "交通" to C.ANT_BLUE to listOf("公交地铁", "打车", "共享单车", "私家车", "火车", "大巴", "飞机", "加油", "充电", "停车", "维修保养"),
+            "住宿" to C.ANT_PURPLE to listOf("房租", "房贷", "水费", "电费", "燃气", "物业", "维修", "装修"),
+            "日常" to C.ANT_LIME to listOf("快递", "理发", "日用杂货"),
+            "学习" to C.ANT_INDIGO to listOf("网课", "书籍", "培训", "学费", "考试报名"),
+            "人情" to C.ANT_RED to listOf("送礼", "发红包", "孝心", "请客", "亲密付", "随礼"),
+            "娱乐" to C.ANT_GOLD to listOf("电影", "游戏", "休闲", "健身", "约会", "演唱会", "K歌", "宠物"),
+            "美妆" to C.PINK_PRIMARY to listOf("洗面奶", "化妆品", "面膜", "美容仪器", "护肤品"),
+            "旅游" to C.ANT_GREEN to listOf("景点门票", "酒店", "团费", "伴手礼", "签证"),
+            "医疗" to C.ANT_CYAN to listOf("药品", "就诊", "治疗", "住院", "保健", "体检"),
+            "会员租用" to C.ANT_GOLD to listOf("视频会员", "音乐会员", "书籍会员", "购物会员", "社交会员", "租赁"),
+            "通讯" to C.ANT_INDIGO to listOf("话费", "宽带", "流量"),
             "其他" to C.ANT_GRAY to listOf("其他")
         )
         expense.forEachIndexed { topIdx, entry ->
