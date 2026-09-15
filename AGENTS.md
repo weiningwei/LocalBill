@@ -20,7 +20,7 @@ LocalBill — a local-only Android expense tracker (Kotlin, no backend). UI stri
 
 ## Data layer (`db/DB.kt`)
 
-- Raw `SQLiteOpenHelper`. Schema is created/updated **only in `onCreate`** — there are no schema migrations; when the schema changes, bump the DB version but keep maintaining it in `onCreate` (fresh installs get the new schema). `onUpgrade` only runs **idempotent data migrations** (e.g. v4's `ensureSeedCategories`, which backfills missing built-in categories and must never touch bills or user-created rows).
+- Raw `SQLiteOpenHelper`. Schema and seed data live **only in `onCreate`**; `onUpgrade` is an intentional no-op — the project is in fast iteration and does NOT do compatibility or migrations. When the schema or seed data changes, bump the DB version and tell the user to clear app data / reinstall to get the latest.
 - Domain encoding (critical, used everywhere):
   - Money is stored as **integer cents** (`Long`), not decimal — use `Money.parseToCents` / `Money.format`.
   - `day` is an `Int` `YYYYMMDD`; `monthKey` is an `Int` `YYYYMM`; `time` is seconds-since-midnight. Use `DateUtil` helpers.

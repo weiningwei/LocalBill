@@ -64,13 +64,8 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // schema 变更直接维护在 onCreate；此处仅做数据级迁移（幂等，不影响账单数据）
-        if (oldVersion < 4) {
-            // v2/v3 -> v4：一级分类「居住」更名为「住宿」（保留 id，历史账单不受影响）
-            db.execSQL("UPDATE category SET name='住宿' WHERE parent=0 AND kind=${Kinds.EXPENSE} AND name='居住'")
-            // 补齐新版内置分类（旧库停留在 v2 种子数据）
-            ensureSeedCategories(db)
-        }
+        // 快速迭代阶段不做迁移：schema 与种子数据只维护在 onCreate，
+        // 升级后如需最新内置分类，清除应用数据或重装即可
     }
 
     private fun seed(db: SQLiteDatabase) {
@@ -104,7 +99,38 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4)
         }
     }
 
-    private fun seedCategories(db: SQLiteDatabase) = ensureSeedCategories(db)
+    private fun seedCategories(db: SQLiteDatabase) {
+        seedExpense.forEachIndexed { topIdx, (name, color, subs) ->
+            val topId = db.insert("category", null, ContentValues().apply {
+                put("parent", 0)
+                put("name", name)
+                put("kind", Kinds.EXPENSE)
+                put("color", color)
+                put("is_system", 1)
+                put("sort", topIdx)
+            })
+            subs.forEachIndexed { subIdx, sub ->
+                db.insert("category", null, ContentValues().apply {
+                    put("parent", topId)
+                    put("name", sub)
+                    put("kind", Kinds.EXPENSE)
+                    put("color", color)
+                    put("is_system", 1)
+                    put("sort", subIdx)
+                })
+            }
+        }
+        seedIncome.forEachIndexed { i, (name, color) ->
+            db.insert("category", null, ContentValues().apply {
+                put("parent", 0)
+                put("name", name)
+                put("kind", Kinds.INCOME)
+                put("color", color)
+                put("is_system", 1)
+                put("sort", i)
+            })
+        }
+    }
 
     /** 内置支出分类种子：一级(名称, 颜色, 子分类列表)，顺序即展示顺序 */
     private val seedExpense = listOf(
@@ -133,85 +159,6 @@ class LocalBillDB(ctx: Context) : SQLiteOpenHelper(ctx, "localbill.db", null, 4)
         "报销" to C.ANT_BLUE,
         "其他收入" to C.ANT_GRAY
     )
-
-    /**
-     * 幂等补齐内置分类（onCreate 与 onUpgrade 共用）：
-     * - 缺失的一级分类整组插入（含子分类）
-     * - 已存在的一级分类仅追加缺失的子分类，并校准颜色/排序
-     * 账单通过 category_id 关联，此过程不影响历史账单
-     */
-    private fun ensureSeedCategories(db: SQLiteDatabase) {
-        seedExpense.forEachIndexed { topIdx, (name, color, subs) ->
-            var topId = findTopCategoryId(db, name, Kinds.EXPENSE)
-            if (topId == null) {
-                topId = db.insert("category", null, ContentValues().apply {
-                    put("parent", 0)
-                    put("name", name)
-                    put("kind", Kinds.EXPENSE)
-                    put("color", color)
-                    put("is_system", 1)
-                    put("sort", topIdx)
-                })
-            } else {
-                db.update("category", ContentValues().apply {
-                    put("color", color)
-                    put("sort", topIdx)
-                }, "id=?", arrayOf(topId.toString()))
-            }
-            val existing = subNamesOf(db, topId)
-            var nextSort = existing.size
-            subs.forEach { sub ->
-                if (sub !in existing) {
-                    db.insert("category", null, ContentValues().apply {
-                        put("parent", topId)
-                        put("name", sub)
-                        put("kind", Kinds.EXPENSE)
-                        put("color", color)
-                        put("is_system", 1)
-                        put("sort", nextSort++)
-                    })
-                }
-            }
-        }
-        seedIncome.forEachIndexed { i, (name, color) ->
-            val topId = findTopCategoryId(db, name, Kinds.INCOME)
-            if (topId == null) {
-                db.insert("category", null, ContentValues().apply {
-                    put("parent", 0)
-                    put("name", name)
-                    put("kind", Kinds.INCOME)
-                    put("color", color)
-                    put("is_system", 1)
-                    put("sort", i)
-                })
-            } else {
-                db.update("category", ContentValues().apply {
-                    put("color", color)
-                    put("sort", i)
-                }, "id=?", arrayOf(topId.toString()))
-            }
-        }
-    }
-
-    private fun findTopCategoryId(db: SQLiteDatabase, name: String, kind: Int): Long? {
-        db.query(
-            "category", arrayOf("id"), "parent=0 AND name=? AND kind=?",
-            arrayOf(name, kind.toString()), null, null, null
-        ).use { c ->
-            return if (c.moveToFirst()) c.getLong(0) else null
-        }
-    }
-
-    private fun subNamesOf(db: SQLiteDatabase, parentId: Long): Set<String> {
-        val out = HashSet<String>()
-        db.query(
-            "category", arrayOf("name"), "parent=?",
-            arrayOf(parentId.toString()), null, null, null
-        ).use { c ->
-            while (c.moveToNext()) out.add(c.getString(0))
-        }
-        return out
-    }
 
     /* ---------------- Ledger ---------------- */
 
