@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 皇冠（会员租用） -->
+    <path
+        android:pathData="M4.5,16.5 L3.5,8.5 L8,11.5 L12,6 L16,11.5 L20.5,8.5 L19.5,16.5 Z"
+        android:fillColor="#FFFFFF" />
+    <!-- 底座 -->
+    <path
+        android:pathData="M5.5,19.5 H18.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+</vector>

@@ -20,9 +20,13 @@ object CatIcon {
         "餐饮" -> R.drawable.ic_cat_food
         "交通" -> R.drawable.ic_cat_car
         "购物" -> R.drawable.ic_cat_shopping
-        "居住" -> R.drawable.ic_cat_home
+        "住宿", "居住" -> R.drawable.ic_cat_home // 「居住」为旧库别名
+        "日常" -> R.drawable.ic_cat_daily
         "医疗" -> R.drawable.ic_cat_medical
         "娱乐" -> R.drawable.ic_cat_game
+        "美妆" -> R.drawable.ic_cat_beauty
+        "旅游" -> R.drawable.ic_cat_travel
+        "会员租用" -> R.drawable.ic_cat_member
         "通讯" -> R.drawable.ic_cat_phone
         "人情" -> R.drawable.ic_cat_gift
         "学习" -> R.drawable.ic_cat_study
