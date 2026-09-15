@@ -159,7 +159,8 @@ class HomePage(private val host: MainActivity) : LinearLayout(host) {
             empty.setPadding(0, Theme.dp(host, 40), 0, Theme.dp(host, 40))
             listContainer.addView(empty, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
         } else {
-            bills.forEach { listContainer.addView(billRow(it), LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)) }
+            // 不传 LayoutParams：billRow 自带带边距的 lp，传参会把它覆盖掉导致图标贴屏幕边缘
+            bills.forEach { listContainer.addView(billRow(it)) }
         }
     }
 
