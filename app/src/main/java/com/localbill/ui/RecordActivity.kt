@@ -433,12 +433,21 @@ class RecordActivity : Activity() {
     /** 把分类铺成每行 [COLUMNS] 个、自动换行的网格；不足一行时补空位保持列对齐 */
     private fun renderGrid(grid: LinearLayout, items: List<Category>, isTop: Boolean) {
         grid.removeAllViews()
-        items.chunked(COLUMNS).forEach { rowItems ->
+        // 子网格首项是一级分类本身时，在其与二级分类之间画一条竖分隔线
+        val showSubDivider = !isTop && items.firstOrNull()?.parent == 0L
+        items.chunked(COLUMNS).forEachIndexed { rowIndex, rowItems ->
             val row = UiKit.horizontal(ctx).apply {
                 setPadding(0, Theme.dp(ctx, 3), 0, Theme.dp(ctx, 3))
             }
-            rowItems.forEach { cat ->
+            rowItems.forEachIndexed { colIndex, cat ->
                 row.addView(catCell(cat, isTop), LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
+                if (showSubDivider && rowIndex == 0 && colIndex == 0) {
+                    row.addView(View(ctx).apply { setBackgroundColor(Theme.divider(ctx)) },
+                        LinearLayout.LayoutParams(1, MATCH_PARENT).apply {
+                            leftMargin = Theme.dp(ctx, 4)
+                            rightMargin = Theme.dp(ctx, 4)
+                        })
+                }
             }
             repeat(COLUMNS - rowItems.size) {
                 row.addView(View(ctx), LinearLayout.LayoutParams(0, 1, 1f))
