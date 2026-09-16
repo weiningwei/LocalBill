@@ -4,17 +4,22 @@ LocalBill — a local-only Android expense tracker (Kotlin, no backend). UI stri
 
 ## Build
 
-- Windows / pwsh: `.\gradlew.bat assembleDebug`. Linux/macOS: `./gradlew`.
+- Windows / pwsh: `.\gradlew.bat assembleDebug`. Linux/macOS: `./gradlew`. CI (`github/workflows/build-apk.yml`) runs the same on manual `workflow_dispatch`.
 - Single module `:app` (namespace/applicationId `com.localbill`). No version catalog (`gradle/libs.versions.toml` doesn't exist) — declare deps directly in `app/build.gradle.kts`.
 - AGP 9.3.1 + Gradle 9.5.0 wrapper + Java 17 (`compileOptions`), compileSdk/targetSdk 37, minSdk 26.
 - AGP 9 has **built-in Kotlin support** — there is no `org.jetbrains.kotlin.android` plugin. Do not add one.
 - `dependencies {}` in `app/build.gradle.kts` is currently empty; that's intentional.
-- No tests, no CI, no lint config — `lint`/`test` tasks have no sources.
+- No tests, no lint config — `lint`/`test` tasks have no sources.
+
+### Category icons: multi-res-roots (`res-cat-*`)
+
+- Sub-category icons live in `app/src/main/res-cat-<group>/drawable/` (one root per top category: `res-cat-food`, `res-cat-shopping`, …), **not** `res/drawable/`. Adding a new `ic_sub_*` icon means putting it in the right `res-cat-<group>/drawable/` folder — the file only compiles into `R` because `app/build.gradle.kts` registers each root via `androidComponents { onVariants { variant.sources.res?.addStaticSourceDirectory(...) } }` (AGP 9: `sourceSets.res.srcDirs` is deprecated and silently ignored).
+- Resource references stay flat (`R.drawable.ic_sub_meals`); the mapping category-name → icon lives in `util/CatIcon.kt` (falls back to the top-level icon, then `ic_cat_other`). Keep the `catResDirs` list and `CatIcon.kt` in sync when adding groups/icons.
 
 ## Architecture
 
 - **UI is 100% programmatic Android Views** (Activity + LinearLayout/TextView/ImageView built in Kotlin). There are no XML layouts and no Compose. New screens/extensions should use the `UiKit` helpers (`app/src/main/java/com/localbill/util/UiKit.kt`), not new layout XML.
-- Colors are resolved through the `Theme` object (`Theme.mainText(ctx)`, `Theme.primary(ctx)`, …) backed by `R.attr` styles in `res/values/attrs.xml`/`themes.xml` (4 accent colors × light/dark). Never hardcode colors — add entries to `C.kt` and attrs/themes, or use existing `Theme.*` accessors.
+- Colors are resolved through the `Theme` object (`Theme.mainText(ctx)`, `Theme.primary(ctx)`, …) backed by `R.attr` styles in `res/values/attrs.xml`/`themes.xml` (9 preset accent colors × light/dark, plus a user-picked custom RGB via `Prefs.customThemeColor`). Never hardcode colors — add entries to `C.kt` and attrs/themes, or use existing `Theme.*` accessors. `Theme.primary*` accessors special-case the custom color, so render through them rather than reading raw color resources.
 - Insets: use `UiKit.fitSystemBars(view)` (or the pattern in `MainActivity.buildUi`) to handle edge-to-edge status/nav bars and the IME.
 - Global state lives on singletons: `App.instance` / `App.db` (see `App.kt`) and `Prefs` (SharedPreferences). `Prefs` must be initialized before use — it already is, in `App.onCreate`.
 
