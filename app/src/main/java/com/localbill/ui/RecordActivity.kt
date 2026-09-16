@@ -458,17 +458,25 @@ class RecordActivity : Activity() {
             selectedSub?.id == cat.id
         }
         val primary = Theme.primary(ctx)
+        // 子网格首项是一级分类本身：用小图标 + 浅色文字与二级分类区分
+        val isTopInSub = !isTop && cat.parent == 0L
+        val iconSize = if (isTopInSub) 30 else 40
         val box = UiKit.vertical(ctx).apply {
             gravity = Gravity.CENTER
             setPadding(Theme.dp(ctx, 2), Theme.dp(ctx, 4), Theme.dp(ctx, 2), Theme.dp(ctx, 4))
             background = UiKit.rounded(ctx, if (selected) lightTint(primary) else 0x00000000, 10)
         }
         box.addView(
-            UiKit.catIcon(ctx, cat, 40),
-            LinearLayout.LayoutParams(Theme.dp(ctx, 40), Theme.dp(ctx, 40))
+            UiKit.catIcon(ctx, cat, iconSize),
+            LinearLayout.LayoutParams(Theme.dp(ctx, iconSize), Theme.dp(ctx, iconSize))
         )
+        val nameColor = when {
+            selected -> primary
+            isTopInSub -> Theme.lightText(ctx)
+            else -> Theme.mainText(ctx)
+        }
         box.addView(
-            UiKit.text(ctx, cat.name, 12f, if (selected) primary else Theme.mainText(ctx)),
+            UiKit.text(ctx, cat.name, 12f, nameColor),
             LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
                 topMargin = Theme.dp(ctx, 3)
             }
